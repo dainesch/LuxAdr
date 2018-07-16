@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <artifactId>LuxAdr</artifactId>
+        <groupId>lu.dainesch</groupId>
+        <version>1.0</version>
+    </parent>
+
+    <groupId>lu.dainesch</groupId>
+    <artifactId>LuxAdrService</artifactId>
+    <version>1.0</version>
+    <packaging>war</packaging>
+
+    <name>LuxAdrService</name>
+
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <maven.compiler.target>1.8</maven.compiler.target>
+        <maven.compiler.source>1.8</maven.compiler.source>
+    </properties>
+    
+
+
+    <build>
+        <plugins>
+
+        </plugins>
+    </build>
+    
+    <dependencies>
+        <dependency>
+            <groupId>javax</groupId>
+            <artifactId>javaee-api</artifactId>
+            <version>8.0</version>
+            <scope>provided</scope>
+        </dependency>
+        <!-- enable CORS requests -->
+        <dependency>
+            <groupId>com.airhacks</groupId>
+            <artifactId>jaxrs-cors</artifactId>
+            <version>0.0.2</version>
+            <scope>compile</scope>
+        </dependency>
+        <!-- swagger api doc -->
+        <dependency>
+            <groupId>io.swagger.core.v3</groupId>
+            <artifactId>swagger-jaxrs2</artifactId>
+            <version>2.0.2</version>
+        </dependency>
+        <dependency>
+            <groupId>io.swagger.core.v3</groupId>
+            <artifactId>swagger-jaxrs2-servlet-initializer</artifactId>
+            <version>2.0.2</version>
+        </dependency>
+    </dependencies>
+
+</project>
