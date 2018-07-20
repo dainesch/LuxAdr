@@ -5,6 +5,10 @@
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     </head>
     <body>
-        <h1>Hello World!</h1>
+        <form action="http://localhost:8080/LuxAdrService/admin/upload" method="post" enctype="multipart/form-data">
+            <p><input type="hidden" name="type" value="POSTALCODE">
+            <p><input type="file" name="file">
+            <p><button type="submit">Submit</button>
+        </form>
     </body>
 </html>
