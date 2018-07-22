@@ -2,5 +2,7 @@ package lu.dainesch.luxadrservice.admin;
 
 
 public enum UploadType {
-    POSTALCODE
+    POSTALCODE,
+    CANTON,
+    DISTRICT
 }

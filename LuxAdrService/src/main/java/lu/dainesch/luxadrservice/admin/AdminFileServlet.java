@@ -10,6 +10,8 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.Part;
+import lu.dainesch.luxadrservice.adr.handler.CantonHandler;
+import lu.dainesch.luxadrservice.adr.handler.DistrictHandler;
 import lu.dainesch.luxadrservice.adr.handler.PostCodeHandler;
 import lu.dainesch.luxadrservice.base.ImportException;
 import org.slf4j.Logger;
@@ -23,6 +25,10 @@ public class AdminFileServlet extends HttpServlet {
 
     @Inject
     private PostCodeHandler codeHand;
+    @Inject
+    private DistrictHandler distHand;
+    @Inject
+    private CantonHandler canHand;
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
@@ -36,6 +42,13 @@ public class AdminFileServlet extends HttpServlet {
             switch (type) {
                 case POSTALCODE:
                     codeHand.updatePostCodes(file.getInputStream());
+                    break;
+                case DISTRICT:
+                    distHand.updateDistricts(file.getInputStream());
+                    break;
+                case CANTON:
+                    canHand.updateCantons(file.getInputStream());
+                    break;
             }
             
         } catch (ImportException ex) {
