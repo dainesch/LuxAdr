@@ -5,9 +5,7 @@ import java.io.InputStream;
 import java.util.Date;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
-import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
-import javax.persistence.PersistenceContext;
 import lu.dainesch.luxadrservice.adr.entity.PostCodeType;
 import lu.dainesch.luxadrservice.adr.entity.PostalCode;
 import lu.dainesch.luxadrservice.base.Import;
@@ -18,15 +16,16 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 @Stateless
-public class PostCodeHandler {
+public class PostCodeHandler extends ImportedEntityHandler<PostalCode> {
 
     private static final Logger LOG = LoggerFactory.getLogger(PostCodeHandler.class);
 
-    @PersistenceContext
-    private EntityManager em;
-
     @Inject
     private ImportHandler impHand;
+
+    public PostCodeHandler() {
+        super(PostalCode.class);
+    }
 
     public PostalCode getByCode(String code) {
         try {
@@ -93,17 +92,6 @@ public class PostCodeHandler {
         } catch (IOException ex) {
             throw new ImportException("Error during postalcode import", ex);
         }
-
-    }
-
-    private int invalidate() {
-        return em.createNamedQuery("postalcode.invalidate").executeUpdate();
-
-    }
-
-    private int postprocess(Import imp) {
-        return em.createNamedQuery("postalcode.deleted")
-                .setParameter("imp", imp).executeUpdate();
 
     }
 

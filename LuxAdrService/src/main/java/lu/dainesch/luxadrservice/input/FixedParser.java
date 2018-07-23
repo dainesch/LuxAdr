@@ -10,6 +10,7 @@ import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Locale;
 import java.util.NoSuchElementException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,6 +19,7 @@ public class FixedParser implements AutoCloseable {
 
     public static final Logger LOG = LoggerFactory.getLogger(FixedParser.class);
 
+    public static final String BOOL_TRUE = "O";
     public static final String NULL_VAL = "?";
     public static final String DATE_FORMAT = "dd.MM.yyyy";
 
@@ -123,6 +125,43 @@ public class FixedParser implements AutoCloseable {
             }
         }
 
+        public boolean getBoolean(int pos) {
+            String s = values[pos];
+            if (s.isEmpty()) {
+                return false;
+            }
+            try {
+                return BOOL_TRUE.equals(s);
+            } catch (NumberFormatException ex) {
+                LOG.warn("Invalid bool value " + s, ex);
+                return false;
+            }
+        }
+
+        public Locale getLanguage(int pos) {
+            String s = values[pos];
+            if (s.isEmpty()) {
+                return null;
+            }
+            try {
+                switch (s) {
+                    case "L":
+                        return new Locale("LU");
+                    case "D":
+                    case "A":
+                        return Locale.GERMAN;
+                    case "F":
+                        return Locale.FRENCH;
+                    default:
+                        LOG.warn("Unsupported language '" + s + "'");
+                        return null;
+                }
+            } catch (NumberFormatException ex) {
+                LOG.warn("Invalid number string " + s, ex);
+                return null;
+            }
+        }
+
         public Date getDate(int pos) {
             String s = values[pos];
             if (s.length() < DATE_FORMAT.length()) {
@@ -158,4 +197,5 @@ public class FixedParser implements AutoCloseable {
         }
 
     }
+
 }

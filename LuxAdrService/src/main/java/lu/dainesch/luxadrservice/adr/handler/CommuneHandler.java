@@ -6,7 +6,8 @@ import java.util.Date;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
 import javax.persistence.NoResultException;
-import lu.dainesch.luxadrservice.adr.entity.District;
+import lu.dainesch.luxadrservice.adr.entity.Canton;
+import lu.dainesch.luxadrservice.adr.entity.Commune;
 import lu.dainesch.luxadrservice.base.Import;
 import lu.dainesch.luxadrservice.base.ImportException;
 import lu.dainesch.luxadrservice.base.ImportHandler;
@@ -15,36 +16,43 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 @Stateless
-public class DistrictHandler extends ImportedEntityHandler<District> {
+public class CommuneHandler extends ImportedEntityHandler<Commune> {
 
-    private static final Logger LOG = LoggerFactory.getLogger(DistrictHandler.class);
+    private static final Logger LOG = LoggerFactory.getLogger(CommuneHandler.class);
 
     @Inject
     private ImportHandler impHand;
+    @Inject
+    private CantonHandler canHand;
 
-    public DistrictHandler() {
-        super(District.class);
+    public CommuneHandler() {
+        super(Commune.class);
     }
 
-    public District getByCode(String code) {
+    public Commune getByCantonCode(Canton can, int code) {
         try {
-            return em.createNamedQuery("district.by.code", District.class)
+            return em.createNamedQuery("commune.by.canton.code", Commune.class)
                     .setParameter("code", code)
+                    .setParameter("can", can)
                     .getSingleResult();
         } catch (NoResultException ex) {
             return null;
         }
     }
 
-    public District createOrUpdate(District distr, Import imp) {
-        District ret = getByCode(distr.getCode());
+    public Commune createOrUpdate(Commune comm, Import imp) {
+        Commune ret = getByCantonCode(comm.getCanton(), comm.getCode());
         if (ret == null) {
-            ret = new District();
+            ret = new Commune();
             ret.setSince(imp);
         }
         ret.setActive(true);
-        ret.setCode(distr.getCode());
-        ret.setName(distr.getName());
+        ret.setCode(comm.getCode());
+        ret.setName(comm.getName());
+
+        ret.setCanton(comm.getCanton());
+        ret.getCanton().getCommunes().add(ret);
+
         ret.setUntil(null);
         if (ret.getId() == null) {
             em.persist(ret);
@@ -52,9 +60,9 @@ public class DistrictHandler extends ImportedEntityHandler<District> {
         return ret;
     }
 
-    public void updateDistricts(InputStream in) throws ImportException {
+    public void updateCommunes(InputStream in) throws ImportException {
 
-        try (FixedParser parser = new FixedParser(in, 4, 40, 10)) {
+        try (FixedParser parser = new FixedParser(in, 2, 40, 40, 10, 2, 1)) {
             if (!parser.hasNext()) {
                 LOG.warn("Empty file given as input, aborting");
                 return;
@@ -68,11 +76,12 @@ public class DistrictHandler extends ImportedEntityHandler<District> {
             while (parser.hasNext()) {
 
                 FixedParser.ParsedLine line = parser.next();
-                District dist = new District();
-                dist.setCode(line.getString(0));
-                dist.setName(line.getString(1));
+                Commune comm = new Commune();
+                comm.setCode(line.getInteger(0));
+                comm.setName(line.getString(1));
+                comm.setCanton(canHand.getByCode(line.getInteger(4)));
 
-                createOrUpdate(dist, currentImport);
+                createOrUpdate(comm, currentImport);
 
                 count++;
             }
@@ -80,10 +89,10 @@ public class DistrictHandler extends ImportedEntityHandler<District> {
             currentImport.setEnd(new Date());
             int deleted = postprocess(currentImport);
 
-            LOG.info("Imported " + count + " districts and deleted " + deleted);
+            LOG.info("Imported " + count + " communes and deleted " + deleted);
 
         } catch (IOException ex) {
-            throw new ImportException("Error during district import", ex);
+            throw new ImportException("Error during commune import", ex);
         }
 
     }

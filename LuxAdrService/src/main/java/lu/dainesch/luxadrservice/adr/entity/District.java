@@ -1,5 +1,6 @@
 package lu.dainesch.luxadrservice.adr.entity;
 
+import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 import javax.persistence.Column;
@@ -36,7 +37,7 @@ public class District extends ImportedEntity {
     private String name;
     
     @OneToMany(mappedBy = "district")
-    private Set<Canton> cantons;
+    private Set<Canton> cantons = new HashSet<>();
 
     public Long getId() {
         return id;

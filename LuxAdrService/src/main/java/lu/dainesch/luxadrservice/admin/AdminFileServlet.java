@@ -11,7 +11,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.Part;
 import lu.dainesch.luxadrservice.adr.handler.CantonHandler;
+import lu.dainesch.luxadrservice.adr.handler.CommuneHandler;
 import lu.dainesch.luxadrservice.adr.handler.DistrictHandler;
+import lu.dainesch.luxadrservice.adr.handler.LocalityHandler;
 import lu.dainesch.luxadrservice.adr.handler.PostCodeHandler;
 import lu.dainesch.luxadrservice.base.ImportException;
 import org.slf4j.Logger;
@@ -29,6 +31,10 @@ public class AdminFileServlet extends HttpServlet {
     private DistrictHandler distHand;
     @Inject
     private CantonHandler canHand;
+    @Inject
+    private CommuneHandler commHand;
+    @Inject
+    private LocalityHandler locHand;
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
@@ -48,6 +54,15 @@ public class AdminFileServlet extends HttpServlet {
                     break;
                 case CANTON:
                     canHand.updateCantons(file.getInputStream());
+                    break;
+                case COMMUNE:
+                    commHand.updateCommunes(file.getInputStream());
+                    break;
+                case LOCALITY:
+                    locHand.updateLocalities(file.getInputStream());
+                    break;
+                case LOCALITY_ALT:
+                    locHand.updateAltNames(file.getInputStream());
                     break;
             }
             

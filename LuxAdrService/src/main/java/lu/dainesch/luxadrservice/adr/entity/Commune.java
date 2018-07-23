@@ -16,38 +16,39 @@ import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.TableGenerator;
+import javax.persistence.UniqueConstraint;
 import lu.dainesch.luxadrservice.base.ImportedEntity;
 
 @Entity
-@Table(name = "CANTON", indexes = {
-    @Index(name = "IDX_CANTON_CODE", columnList = "CODE")
+@Table(name = "COMMUNE", uniqueConstraints = {
+    @UniqueConstraint(name = "UN_COMMUNE_CANT_CODE", columnNames = {"CANT_ID", "CODE"})
 })
 @NamedQueries({
-    @NamedQuery(name = "canton.invalidate", query = "UPDATE Canton SET active = false")
+    @NamedQuery(name = "commune.invalidate", query = "UPDATE Commune SET active = false")
     ,
-    @NamedQuery(name = "canton.deleted", query = "UPDATE Canton SET until=:imp WHERE active = false and until is null")
+    @NamedQuery(name = "commune.deleted", query = "UPDATE Commune SET until=:imp WHERE active = false and until is null")
     ,
-    @NamedQuery(name = "canton.by.code", query = "SELECT c from Canton c where c.code = :code")
+    @NamedQuery(name = "commune.by.canton.code", query = "SELECT c FROM Commune c WHERE c.code = :code AND c.canton = :can")
 })
-public class Canton extends ImportedEntity {
+public class Commune extends ImportedEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.TABLE, generator = "Canton")
-    @TableGenerator(name = "Canton")
+    @GeneratedValue(strategy = GenerationType.TABLE, generator = "Commune")
+    @TableGenerator(name = "Commune")
     private Long id;
 
-    @Column(name = "CODE", nullable = false, unique = true)
+    @Column(name = "CODE", nullable = false)
     private int code;
 
     @Column(name = "NAME", nullable = false, length = 40)
     private String name;
 
     @ManyToOne
-    @JoinColumn(name = "DIST_ID", nullable = false)
-    private District district;
+    @JoinColumn(name = "CANT_ID", nullable = false)
+    private Canton canton;
 
-    @OneToMany(mappedBy = "canton")
-    private Set<Commune> communes = new HashSet<>();
+    @OneToMany(mappedBy = "commune")
+    private Set<Locality> localities = new HashSet<>();
 
     public Long getId() {
         return id;
@@ -73,26 +74,27 @@ public class Canton extends ImportedEntity {
         this.name = name;
     }
 
-    public District getDistrict() {
-        return district;
+    public Canton getCanton() {
+        return canton;
     }
 
-    public void setDistrict(District district) {
-        this.district = district;
+    public void setCanton(Canton canton) {
+        this.canton = canton;
     }
 
-    public Set<Commune> getCommunes() {
-        return communes;
+    public Set<Locality> getLocalities() {
+        return localities;
     }
 
-    public void setCommunes(Set<Commune> communes) {
-        this.communes = communes;
+    public void setLocalities(Set<Locality> localities) {
+        this.localities = localities;
     }
 
     @Override
     public int hashCode() {
         int hash = 5;
-        hash = 23 * hash + Objects.hashCode(this.code);
+        hash = 13 * hash + this.code;
+        hash = 13 * hash + Objects.hashCode(this.canton);
         return hash;
     }
 
@@ -107,11 +109,16 @@ public class Canton extends ImportedEntity {
         if (getClass() != obj.getClass()) {
             return false;
         }
-        final Canton other = (Canton) obj;
-        if (!Objects.equals(this.code, other.code)) {
+        final Commune other = (Commune) obj;
+        if (this.code != other.code) {
+            return false;
+        }
+        if (!Objects.equals(this.canton, other.canton)) {
             return false;
         }
         return true;
     }
+
+ 
 
 }

@@ -17,19 +17,20 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 @Stateless
-public class CantonHandler {
+public class CantonHandler extends ImportedEntityHandler<Canton> {
 
-    private static final Logger LOG = LoggerFactory.getLogger(PostCodeHandler.class);
-
-    @PersistenceContext
-    private EntityManager em;
+    private static final Logger LOG = LoggerFactory.getLogger(CantonHandler.class);
 
     @Inject
     private ImportHandler impHand;
     @Inject
     private DistrictHandler distHand;
 
-    public Canton getByCode(String code) {
+    public CantonHandler() {
+        super(Canton.class);
+    }
+
+    public Canton getByCode(int code) {
         try {
             return em.createNamedQuery("canton.by.code", Canton.class)
                     .setParameter("code", code)
@@ -48,7 +49,7 @@ public class CantonHandler {
         ret.setActive(true);
         ret.setCode(can.getCode());
         ret.setName(can.getName());
-        
+
         ret.setDistrict(can.getDistrict());
         ret.getDistrict().getCantons().add(ret);
 
@@ -75,12 +76,12 @@ public class CantonHandler {
             while (parser.hasNext()) {
 
                 FixedParser.ParsedLine line = parser.next();
-                Canton code = new Canton();
-                code.setCode(line.getString(0));
-                code.setName(line.getString(1));
-                code.setDistrict(distHand.getByCode(line.getString(3)));
+                Canton cant = new Canton();
+                cant.setCode(line.getInteger(0));
+                cant.setName(line.getString(1));
+                cant.setDistrict(distHand.getByCode(line.getString(3)));
 
-                createOrUpdate(code, currentImport);
+                createOrUpdate(cant, currentImport);
 
                 count++;
             }
@@ -96,14 +97,4 @@ public class CantonHandler {
 
     }
 
-    private int invalidate() {
-        return em.createNamedQuery("canton.invalidate").executeUpdate();
-
-    }
-
-    private int postprocess(Import imp) {
-        return em.createNamedQuery("canton.deleted")
-                .setParameter("imp", imp).executeUpdate();
-
-    }
 }
