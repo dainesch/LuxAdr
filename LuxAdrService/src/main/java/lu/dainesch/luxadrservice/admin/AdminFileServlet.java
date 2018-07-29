@@ -1,5 +1,6 @@
 package lu.dainesch.luxadrservice.admin;
 
+import lu.dainesch.luxadrservice.base.ImportStep;
 import java.io.IOException;
 import java.util.Scanner;
 import javax.inject.Inject;
@@ -30,43 +31,12 @@ public class AdminFileServlet extends HttpServlet {
         String sType = new Scanner(req.getPart("type").getInputStream()).nextLine();
         Part file = req.getPart("file");
 
-        UploadType type = UploadType.valueOf(sType);
-
         try {
-            switch (type) {
-                case POSTALCODE:
-                    impServ.updatePostCodes(file.getInputStream());
-                    break;
-                case DISTRICT:
-                    impServ.updateDistricts(file.getInputStream());
-                    break;
-                case CANTON:
-                    impServ.updateCantons(file.getInputStream());
-                    break;
-                case COMMUNE:
-                    impServ.updateCommunes(file.getInputStream());
-                    break;
-                case LOCALITY:
-                    impServ.updateLocalities(file.getInputStream());
-                    break;
-                case LOCALITY_ALT:
-                    impServ.updateLocalityAltNames(file.getInputStream());
-                    break;
-                case QUARTER:
-                    impServ.updateQuarters(file.getInputStream());
-                    break;
-                case STREET:
-                    impServ.updateStreets(file.getInputStream());
-                    break;
-                case STREET_ALT:
-                    impServ.updateStreetAltNames(file.getInputStream());
-                    break;
-                case BUILDING:
-                    impServ.updateBuildings(file.getInputStream());
-                    break;
-                case BUILDING_DES:
-                    impServ.updateBuildingsDesign(file.getInputStream());
-                    break;
+            if ("ALL".equalsIgnoreCase(sType)) {
+                impServ.updateAll(file.getInputStream());
+            } else {
+                ImportStep type = ImportStep.valueOf(sType);
+                impServ.update(null, type, file.getInputStream());
             }
 
         } catch (ImportException ex) {

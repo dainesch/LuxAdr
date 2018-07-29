@@ -17,6 +17,11 @@ public class PostCodeHandler extends ImportedEntityHandler<PostalCode> {
         super(PostalCode.class);
     }
 
+    @Override
+    public int[] getLineFormat() {
+        return new int[]{4, 40, 1, 4, 4, 10};
+    }
+
     public PostalCode getByCode(String code) {
         try {
             return em.createNamedQuery("postalcode.by.code", PostalCode.class)
@@ -50,7 +55,8 @@ public class PostCodeHandler extends ImportedEntityHandler<PostalCode> {
     }
 
     @Asynchronous
-    public Future<Boolean> importPostCode(FixedParser.ParsedLine line, Import currentImport) {
+    @Override
+    public Future<Boolean> importLine(FixedParser.ParsedLine line, Import currentImport) {
 
         PostalCode code = new PostalCode();
         code.setCode(line.getString(0));

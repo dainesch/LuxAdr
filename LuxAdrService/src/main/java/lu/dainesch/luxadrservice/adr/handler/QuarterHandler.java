@@ -20,6 +20,11 @@ public class QuarterHandler extends ImportedEntityHandler<Quarter> {
         super(Quarter.class);
     }
 
+    @Override
+    public int[] getLineFormat() {
+        return new int[]{5, 40, 10, 5, 1};
+    }
+
     public Quarter getByNumber(int num) {
         try {
             return em.createNamedQuery("quarter.by.num", Quarter.class)
@@ -53,7 +58,8 @@ public class QuarterHandler extends ImportedEntityHandler<Quarter> {
     }
 
     @Asynchronous
-    public Future<Boolean> importQuarter(FixedParser.ParsedLine line, Import currentImport) {
+    @Override
+    public Future<Boolean> importLine(FixedParser.ParsedLine line, Import currentImport) {
 
         Quarter cant = new Quarter();
         cant.setNumber(line.getInteger(0));

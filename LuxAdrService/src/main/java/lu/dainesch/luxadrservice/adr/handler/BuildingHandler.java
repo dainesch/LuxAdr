@@ -34,6 +34,16 @@ public class BuildingHandler extends ImportedEntityHandler<Building> {
         super(Building.class);
     }
 
+    @Override
+    public int[] getLineFormat() {
+        return new int[]{8, 3, 6, 10, 1, 10, 4, 1, 5, 1, 5, 1, 1, 1};
+    }
+
+    @Override
+    public int[] getAltLineFormat() {
+        return new int[]{8, 3, 6, 10, 1, 10, 4, 1, 5, 1, 5, 1, 1, 1, 40, 1};
+    }
+
     public Building getByNumber(int num) {
         try {
             return em.createNamedQuery("building.by.num", Building.class)
@@ -87,7 +97,8 @@ public class BuildingHandler extends ImportedEntityHandler<Building> {
     }
 
     @Asynchronous
-    public Future<Boolean> importBuilding(FixedParser.ParsedLine line, Import currentImport) {
+    @Override
+    public Future<Boolean> importLine(FixedParser.ParsedLine line, Import currentImport) {
 
         Building bui = new Building();
         bui.setNumber(line.getInteger(0));
@@ -110,7 +121,8 @@ public class BuildingHandler extends ImportedEntityHandler<Building> {
     }
 
     @Asynchronous
-    public Future<Boolean> importBuildingName(FixedParser.ParsedLine line) {
+    @Override
+    public Future<Boolean> importAltName(FixedParser.ParsedLine line) {
 
         Building b = getByNumber(line.getInteger(0));
         if (b != null) {
@@ -125,6 +137,12 @@ public class BuildingHandler extends ImportedEntityHandler<Building> {
         }
         return new AsyncResult<>(false);
 
+    }
+
+    @Override
+    public int deleteAltNames() {
+        //noop
+        return 0;
     }
 
     private void setNumbers(Building b, int num, String mult) {

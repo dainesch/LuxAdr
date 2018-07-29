@@ -22,6 +22,16 @@ public class StreetHandler extends ImportedEntityHandler<Street> {
         super(Street.class);
     }
 
+    @Override
+    public int[] getLineFormat() {
+        return new int[]{5, 40, 40, 10, 5, 1, 1, 10, 1, 10, 2, 1, 4, 1, 5, 1, 1, 30};
+    }
+
+    @Override
+    public int[] getAltLineFormat() {
+        return new int[]{3, 40, 40, 1, 10, 5, 80, 1};
+    }
+
     public Street getByNumber(int num) {
         try {
             return em.createNamedQuery("street.by.num", Street.class)
@@ -58,7 +68,8 @@ public class StreetHandler extends ImportedEntityHandler<Street> {
     }
 
     @Asynchronous
-    public Future<Boolean> importStreet(FixedParser.ParsedLine line, Import currentImport) {
+    @Override
+    public Future<Boolean> importLine(FixedParser.ParsedLine line, Import currentImport) {
 
         Street s = new Street();
         s.setNumber(line.getInteger(0));
@@ -83,6 +94,7 @@ public class StreetHandler extends ImportedEntityHandler<Street> {
     }
 
     @Asynchronous
+    @Override
     public Future<Boolean> importAltName(FixedParser.ParsedLine line) {
 
         AlternateName n = new AlternateName(line.getLanguage(3), line.getString(1));
@@ -97,6 +109,7 @@ public class StreetHandler extends ImportedEntityHandler<Street> {
         return new AsyncResult<>(false);
     }
 
+    @Override
     public int deleteAltNames() {
         return em.createNamedQuery("alternatename.del.str").executeUpdate();
     }

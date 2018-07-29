@@ -24,6 +24,16 @@ public class LocalityHandler extends ImportedEntityHandler<Locality> {
         super(Locality.class);
     }
 
+    @Override
+    public int[] getLineFormat() {
+        return new int[]{5, 40, 40, 2, 1, 10, 1, 10, 2, 1, 2, 1};
+    }
+
+    @Override
+    public int[] getAltLineFormat() {
+        return new int[]{3, 40, 40, 1, 10, 5};
+    }
+
     public Locality getByNumber(int num) {
         try {
             return em.createNamedQuery("locality.by.number", Locality.class)
@@ -59,7 +69,8 @@ public class LocalityHandler extends ImportedEntityHandler<Locality> {
     }
 
     @Asynchronous
-    public Future<Boolean> importLocality(FixedParser.ParsedLine line, Import currentImport) {
+    @Override
+    public Future<Boolean> importLine(FixedParser.ParsedLine line, Import currentImport) {
 
         Locality loc = new Locality();
         loc.setNumber(line.getInteger(0));
@@ -78,6 +89,7 @@ public class LocalityHandler extends ImportedEntityHandler<Locality> {
     }
 
     @Asynchronous
+    @Override
     public Future<Boolean> importAltName(FixedParser.ParsedLine line) {
 
         AlternateName n = new AlternateName(line.getLanguage(3), line.getString(1));
@@ -92,6 +104,7 @@ public class LocalityHandler extends ImportedEntityHandler<Locality> {
         return new AsyncResult<>(false);
     }
 
+    @Override
     public int deleteAltNames() {
         return em.createNamedQuery("alternatename.del.loc").executeUpdate();
     }

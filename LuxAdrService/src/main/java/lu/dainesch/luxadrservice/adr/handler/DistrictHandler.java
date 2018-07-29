@@ -15,6 +15,11 @@ public class DistrictHandler extends ImportedEntityHandler<District> {
     public DistrictHandler() {
         super(District.class);
     }
+    
+    @Override
+    public int[] getLineFormat() {
+        return new int[]{4, 40, 10};
+    }
 
     public District getByCode(String code) {
         try {
@@ -46,7 +51,8 @@ public class DistrictHandler extends ImportedEntityHandler<District> {
     }
 
     @Asynchronous
-    public Future<Boolean> importDistrict(FixedParser.ParsedLine line, Import currentImport) {
+    @Override
+    public Future<Boolean> importLine(FixedParser.ParsedLine line, Import currentImport) {
 
         District dist = new District();
         dist.setCode(line.getString(0));

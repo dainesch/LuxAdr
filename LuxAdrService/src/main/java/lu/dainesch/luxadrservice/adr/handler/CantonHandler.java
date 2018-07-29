@@ -19,6 +19,11 @@ public class CantonHandler extends ImportedEntityHandler<Canton> {
     public CantonHandler() {
         super(Canton.class);
     }
+    
+    @Override
+    public int[] getLineFormat() {
+        return new int[]{2, 40, 10, 4, 1};
+    }
 
     public Canton getByCode(int code) {
         try {
@@ -53,7 +58,8 @@ public class CantonHandler extends ImportedEntityHandler<Canton> {
     }
 
     @Asynchronous
-    public Future<Boolean> importCanton(FixedParser.ParsedLine line, Import currentImport) {
+    @Override
+    public Future<Boolean> importLine(FixedParser.ParsedLine line, Import currentImport) {
 
         Canton cant = new Canton();
         cant.setCode(line.getInteger(0));

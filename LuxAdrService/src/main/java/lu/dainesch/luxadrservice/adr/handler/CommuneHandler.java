@@ -20,6 +20,11 @@ public class CommuneHandler extends ImportedEntityHandler<Commune> {
     public CommuneHandler() {
         super(Commune.class);
     }
+    
+    @Override
+    public int[] getLineFormat() {
+        return new int[]{2, 40, 40, 10, 2, 1};
+    }
 
     public Commune getByCantonCode(Canton can, int code) {
         try {
@@ -55,7 +60,8 @@ public class CommuneHandler extends ImportedEntityHandler<Commune> {
     }
 
     @Asynchronous
-    public Future<Boolean> importCommune(FixedParser.ParsedLine line, Import currentImport) {
+    @Override
+    public Future<Boolean> importLine(FixedParser.ParsedLine line, Import currentImport) {
 
         Commune comm = new Commune();
         comm.setCode(line.getInteger(0));
