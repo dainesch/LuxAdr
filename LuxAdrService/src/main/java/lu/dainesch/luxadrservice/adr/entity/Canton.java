@@ -3,6 +3,7 @@ package lu.dainesch.luxadrservice.adr.entity;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
+import javax.persistence.Cacheable;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -22,10 +23,9 @@ import lu.dainesch.luxadrservice.base.ImportedEntity;
 @Table(name = "CANTON", indexes = {
     @Index(name = "IDX_CANTON_CODE", columnList = "CODE")
 })
+@Cacheable
 @NamedQueries({
-    @NamedQuery(name = "canton.invalidate", query = "UPDATE Canton SET active = false")
-    ,
-    @NamedQuery(name = "canton.deleted", query = "UPDATE Canton SET until=:imp WHERE active = false and until is null")
+    @NamedQuery(name = "canton.invalidate", query = "UPDATE Canton SET active = false, until = :imp where current != :imp")
     ,
     @NamedQuery(name = "canton.by.code", query = "SELECT c from Canton c where c.code = :code")
 })

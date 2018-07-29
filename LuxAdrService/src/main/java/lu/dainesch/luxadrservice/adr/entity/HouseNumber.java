@@ -2,6 +2,7 @@ package lu.dainesch.luxadrservice.adr.entity;
 
 import java.io.Serializable;
 import java.util.Objects;
+import javax.persistence.Cacheable;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -14,6 +15,7 @@ import javax.persistence.TableGenerator;
 
 @Entity
 @Table(name = "HOUSENUMBER")
+@Cacheable
 public class HouseNumber implements Serializable {
 
     @Id
@@ -62,9 +64,8 @@ public class HouseNumber implements Serializable {
 
     @Override
     public int hashCode() {
-        int hash = 5;
-        hash = 29 * hash + Objects.hashCode(this.number);
-        hash = 29 * hash + Objects.hashCode(this.building);
+        int hash = 7;
+        hash = 89 * hash + Objects.hashCode(this.number);
         return hash;
     }
 
@@ -81,9 +82,6 @@ public class HouseNumber implements Serializable {
         }
         final HouseNumber other = (HouseNumber) obj;
         if (!Objects.equals(this.number, other.number)) {
-            return false;
-        }
-        if (!Objects.equals(this.building, other.building)) {
             return false;
         }
         return true;

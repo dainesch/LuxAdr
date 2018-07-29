@@ -3,6 +3,7 @@ package lu.dainesch.luxadrservice.adr.entity;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
+import javax.persistence.Cacheable;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -20,9 +21,10 @@ import lu.dainesch.luxadrservice.base.ImportedEntity;
 @Table(name = "DISTRICT", indexes = {
     @Index(name = "IDX_DISTRICT_CODE", columnList = "CODE")
 })
+@Cacheable
 @NamedQueries({
-    @NamedQuery(name = "district.invalidate", query = "UPDATE District SET active = false"),
-    @NamedQuery(name = "district.deleted", query = "UPDATE District SET until=:imp WHERE active = false and until is null"),
+    @NamedQuery(name = "district.invalidate", query = "UPDATE District SET active = false, until = :imp where current != :imp")
+    ,
     @NamedQuery(name = "district.by.code", query = "SELECT d from District d where d.code = :code")
 })
 public class District extends ImportedEntity {
@@ -32,13 +34,13 @@ public class District extends ImportedEntity {
     @TableGenerator(name = "District")
     @Column(name = "DIST_ID")
     private Long id;
-    
+
     @Column(name = "CODE", nullable = false, unique = true, length = 4)
     private String code;
-    
+
     @Column(name = "NAME", nullable = false, length = 40)
     private String name;
-    
+
     @OneToMany(mappedBy = "district")
     private Set<Canton> cantons = new HashSet<>();
 
@@ -98,7 +100,5 @@ public class District extends ImportedEntity {
         }
         return true;
     }
-    
-    
 
 }

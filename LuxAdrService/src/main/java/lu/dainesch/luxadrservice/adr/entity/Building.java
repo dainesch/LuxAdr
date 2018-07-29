@@ -2,6 +2,7 @@ package lu.dainesch.luxadrservice.adr.entity;
 
 import java.util.HashSet;
 import java.util.Set;
+import javax.persistence.Cacheable;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -20,10 +21,9 @@ import lu.dainesch.luxadrservice.base.ImportedEntity;
 
 @Entity
 @Table(name = "BUILDING")
+@Cacheable
 @NamedQueries({
-    @NamedQuery(name = "building.invalidate", query = "UPDATE Building SET active = false")
-    ,
-    @NamedQuery(name = "building.deleted", query = "UPDATE Building SET until=:imp WHERE active = false and until is null")
+    @NamedQuery(name = "building.invalidate", query = "UPDATE Building SET active = false, until = :imp where current != :imp")
     ,
     @NamedQuery(name = "building.by.num", query = "SELECT b from Building b where b.number = :num")
     ,

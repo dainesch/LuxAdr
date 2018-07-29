@@ -2,6 +2,7 @@ package lu.dainesch.luxadrservice.adr.entity;
 
 import java.util.HashSet;
 import java.util.Set;
+import javax.persistence.Cacheable;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -18,10 +19,9 @@ import lu.dainesch.luxadrservice.base.ImportedEntity;
 
 @Entity
 @Table(name = "QUARTER")
+@Cacheable
 @NamedQueries({
-    @NamedQuery(name = "quarter.invalidate", query = "UPDATE Quarter SET active = false")
-    ,
-    @NamedQuery(name = "quarter.deleted", query = "UPDATE Quarter SET until=:imp WHERE active = false and until is null")
+    @NamedQuery(name = "quarter.invalidate", query = "UPDATE Quarter SET active = false, until = :imp where current != :imp")
     ,
     @NamedQuery(name = "quarter.by.num", query = "SELECT q from Quarter q where q.number = :num")
 })

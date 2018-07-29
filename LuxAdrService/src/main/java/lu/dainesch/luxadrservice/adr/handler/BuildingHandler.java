@@ -1,18 +1,18 @@
 package lu.dainesch.luxadrservice.adr.handler;
 
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.concurrent.Future;
+import java.util.regex.Pattern;
+import javax.ejb.AsyncResult;
+import javax.ejb.Asynchronous;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
 import javax.persistence.NoResultException;
 import lu.dainesch.luxadrservice.adr.entity.Building;
 import lu.dainesch.luxadrservice.adr.entity.HouseNumber;
 import lu.dainesch.luxadrservice.base.Import;
-import lu.dainesch.luxadrservice.base.ImportException;
-import lu.dainesch.luxadrservice.base.ImportHandler;
 import lu.dainesch.luxadrservice.input.FixedParser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,9 +21,8 @@ import org.slf4j.LoggerFactory;
 public class BuildingHandler extends ImportedEntityHandler<Building> {
 
     private static final Logger LOG = LoggerFactory.getLogger(BuildingHandler.class);
+    private static final Pattern ALPHA_END = Pattern.compile("^-[0-9]+[A-Z]$");
 
-    @Inject
-    private ImportHandler impHand;
     @Inject
     private StreetHandler strHand;
     @Inject
@@ -79,94 +78,52 @@ public class BuildingHandler extends ImportedEntityHandler<Building> {
         }
 
         ret.setUntil(null);
+        ret.setCurrent(imp);
+
         if (ret.getId() == null) {
             em.persist(ret);
         }
         return ret;
     }
 
-    public void updateBuildings(InputStream in) throws ImportException {
+    @Asynchronous
+    public Future<Boolean> importBuilding(FixedParser.ParsedLine line, Import currentImport) {
 
-        try (FixedParser parser = new FixedParser(in, 8, 3, 6, 10, 1, 10, 4, 1, 5, 1, 5, 1, 1, 1)) {
-            if (!parser.hasNext()) {
-                LOG.warn("Empty file given as input, aborting");
-                return;
-            }
-
-            Import currentImport = impHand.createNewImport();
-            int count = 0;
-
-            invalidate();
-
-            while (parser.hasNext()) {
-
-                FixedParser.ParsedLine line = parser.next();
-                //LOG.info(line.toString());
-                Building bui = new Building();
-                bui.setNumber(line.getInteger(0));
-                bui.setPostalCode(pcHand.getByCode(line.getString(6)));
-                if (line.getInteger(8) != null) {
-                    bui.setQuarter(quaHand.getByNumber(line.getInteger(8)));
-                }
-                bui.setStreet(strHand.getByNumber(line.getInteger(10)));
-
-                Date valid = line.getDate(4);
-                if (!line.getBoolean(12) && !line.getBoolean(13)
-                        && (valid == null || valid.after(new Date()))) {
-
-                    setNumbers(bui, line.getInteger(1), line.getString(2));
-                    createOrUpdate(bui, currentImport);
-
-                    count++;
-                }
-                if (count % 1000 == 0) {
-                    LOG.info("Processing line " + count);
-                }
-            }
-
-            currentImport.setEnd(new Date());
-            int deleted = postprocess(currentImport);
-
-            LOG.info("Imported " + count + " buildings and deleted " + deleted);
-
-        } catch (IOException ex) {
-            throw new ImportException("Error during building import", ex);
+        Building bui = new Building();
+        bui.setNumber(line.getInteger(0));
+        bui.setPostalCode(pcHand.getByCode(line.getString(6)));
+        if (line.getInteger(8) != null) {
+            bui.setQuarter(quaHand.getByNumber(line.getInteger(8)));
         }
+        bui.setStreet(strHand.getByNumber(line.getInteger(10)));
 
+        Date valid = line.getDate(4);
+        if (!line.getBoolean(12) && !line.getBoolean(13)
+                && (valid == null || valid.after(new Date()))) {
+
+            setNumbers(bui, line.getInteger(1), line.getString(2));
+            createOrUpdate(bui, currentImport);
+
+            return new AsyncResult<>(true);
+        }
+        return new AsyncResult<>(false);
     }
 
-    public void updateBuildingsDesign(InputStream in) throws ImportException {
+    @Asynchronous
+    public Future<Boolean> importBuildingName(FixedParser.ParsedLine line) {
 
-        try (FixedParser parser = new FixedParser(in, 8, 3, 6, 10, 1, 10, 4, 1, 5, 1, 5, 1, 1, 1, 40, 1)) {
-            if (!parser.hasNext()) {
-                LOG.warn("Empty file given as input, aborting");
-                return;
+        Building b = getByNumber(line.getInteger(0));
+        if (b != null) {
+
+            Date valid = line.getDate(4);
+            if (!line.getBoolean(12) && !line.getBoolean(13)
+                    && (valid == null || valid.after(new Date()))) {
+
+                b.setName(line.getString(14));
+                return new AsyncResult<>(true);
             }
-            int count = 0;
-
-            while (parser.hasNext()) {
-
-                FixedParser.ParsedLine line = parser.next();
-
-                Building b = getByNumber(line.getInteger(0));
-                if (b == null) {
-                    continue;
-                }
-
-                Date valid = line.getDate(4);
-                if (!line.getBoolean(12) && !line.getBoolean(13)
-                        && (valid == null || valid.after(new Date()))) {
-
-                    b.setName(line.getString(14));
-                    count++;
-                }
-            }
-
-            LOG.info("Imported " + count + " buildings names ");
-
-        } catch (IOException ex) {
-            throw new ImportException("Error during building name import", ex);
         }
+        return new AsyncResult<>(false);
 
     }
 
@@ -182,10 +139,21 @@ public class BuildingHandler extends ImportedEntityHandler<Building> {
 
         } else {
             try {
+                String alph = null;
+                if (ALPHA_END.matcher(mult).matches()) {
+                    alph = mult.substring(mult.length() - 2);
+                    mult = mult.substring(0, mult.length() - 2);
+                }
+
                 int max = Integer.parseInt(mult.substring(1));
                 for (int n = num; n <= max; n++) {
                     HouseNumber ret = new HouseNumber(String.valueOf(n));
                     b.getNumbers().add(ret);
+                }
+                if (alph != null) {
+                    HouseNumber ret = new HouseNumber(String.valueOf(max) + alph);
+                    b.getNumbers().add(ret);
+                    LOG.warn("Adding aplha ended range number " + ret.getNumber());
                 }
             } catch (NumberFormatException ex) {
                 LOG.error("Error parsing house number, expected -number got " + mult);

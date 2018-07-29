@@ -17,5 +17,9 @@ public class ImportHandler {
         em.persist(ret);
         return ret;
     }
+    
+    public void update(Import imp) {
+        em.merge(imp);
+    }
 
 }

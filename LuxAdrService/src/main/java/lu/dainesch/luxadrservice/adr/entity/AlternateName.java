@@ -3,6 +3,7 @@ package lu.dainesch.luxadrservice.adr.entity;
 import java.io.Serializable;
 import java.util.Locale;
 import java.util.Objects;
+import javax.persistence.Cacheable;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -17,6 +18,7 @@ import javax.persistence.TableGenerator;
 
 @Entity
 @Table(name = "ALT_NAME")
+@Cacheable
 @NamedQueries({
     @NamedQuery(name = "alternatename.del.loc", query = "DELETE FROM AlternateName WHERE localiity != null")
     ,

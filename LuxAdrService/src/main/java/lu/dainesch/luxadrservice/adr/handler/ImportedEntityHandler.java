@@ -16,13 +16,8 @@ public class ImportedEntityHandler<I extends ImportedEntity> {
         entity = clazz.getSimpleName().toLowerCase();
     }
 
-    protected int invalidate() {
-        return em.createNamedQuery(entity + ".invalidate").executeUpdate();
-
-    }
-
-    protected int postprocess(Import imp) {
-        return em.createNamedQuery(entity + ".deleted")
+    public int postprocess(Import imp) {
+        return em.createNamedQuery(entity + ".invalidate")
                 .setParameter("imp", imp).executeUpdate();
 
     }

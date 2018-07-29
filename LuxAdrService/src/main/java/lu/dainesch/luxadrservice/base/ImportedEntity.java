@@ -17,6 +17,10 @@ public class ImportedEntity implements Serializable {
     protected Import since;
 
     @ManyToOne
+    @JoinColumn(name = "IMP_CURR", nullable = false)
+    protected Import current;
+
+    @ManyToOne
     @JoinColumn(name = "IMP_UNTIL")
     protected Import until;
 
@@ -42,6 +46,14 @@ public class ImportedEntity implements Serializable {
 
     public void setUntil(Import until) {
         this.until = until;
+    }
+
+    public Import getCurrent() {
+        return current;
+    }
+
+    public void setCurrent(Import current) {
+        this.current = current;
     }
 
 }

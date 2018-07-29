@@ -3,6 +3,7 @@ package lu.dainesch.luxadrservice.adr.entity;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
+import javax.persistence.Cacheable;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -22,10 +23,9 @@ import lu.dainesch.luxadrservice.base.ImportedEntity;
 @Table(name = "COMMUNE", uniqueConstraints = {
     @UniqueConstraint(name = "UN_COMMUNE_CANT_CODE", columnNames = {"CANT_ID", "CODE"})
 })
+@Cacheable
 @NamedQueries({
-    @NamedQuery(name = "commune.invalidate", query = "UPDATE Commune SET active = false")
-    ,
-    @NamedQuery(name = "commune.deleted", query = "UPDATE Commune SET until=:imp WHERE active = false and until is null")
+    @NamedQuery(name = "commune.invalidate", query = "UPDATE Commune SET active = false, until = :imp where current != :imp")
     ,
     @NamedQuery(name = "commune.by.canton.code", query = "SELECT c FROM Commune c WHERE c.code = :code AND c.canton = :can")
 })
