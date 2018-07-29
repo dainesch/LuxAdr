@@ -1,14 +1,12 @@
 package lu.dainesch.luxadrservice.adr.entity;
 
 import java.util.HashSet;
-import java.util.Objects;
 import java.util.Set;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.Index;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
@@ -19,36 +17,34 @@ import javax.persistence.TableGenerator;
 import lu.dainesch.luxadrservice.base.ImportedEntity;
 
 @Entity
-@Table(name = "CANTON", indexes = {
-    @Index(name = "IDX_CANTON_CODE", columnList = "CODE")
-})
+@Table(name = "QUARTER")
 @NamedQueries({
-    @NamedQuery(name = "canton.invalidate", query = "UPDATE Canton SET active = false")
+    @NamedQuery(name = "quarter.invalidate", query = "UPDATE Quarter SET active = false")
     ,
-    @NamedQuery(name = "canton.deleted", query = "UPDATE Canton SET until=:imp WHERE active = false and until is null")
+    @NamedQuery(name = "quarter.deleted", query = "UPDATE Quarter SET until=:imp WHERE active = false and until is null")
     ,
-    @NamedQuery(name = "canton.by.code", query = "SELECT c from Canton c where c.code = :code")
+    @NamedQuery(name = "quarter.by.num", query = "SELECT q from Quarter q where q.number = :num")
 })
-public class Canton extends ImportedEntity {
+public class Quarter extends ImportedEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.TABLE, generator = "Canton")
-    @TableGenerator(name = "Canton")
-    @Column(name = "CANT_ID")
+    @GeneratedValue(strategy = GenerationType.TABLE, generator = "Quarter")
+    @TableGenerator(name = "Quarter")
+    @Column(name = "QUA_ID")
     private Long id;
 
-    @Column(name = "CODE", nullable = false, unique = true)
-    private int code;
+    @Column(name = "NUMBER", nullable = false, unique = true)
+    private int number;
 
     @Column(name = "NAME", nullable = false, length = 40)
     private String name;
 
     @ManyToOne
-    @JoinColumn(name = "DIST_ID", nullable = false)
-    private District district;
+    @JoinColumn(name = "LOC_ID", nullable = false)
+    private Locality locality;
 
-    @OneToMany(mappedBy = "canton")
-    private Set<Commune> communes = new HashSet<>();
+    @OneToMany(mappedBy = "quarter")
+    private Set<Building> buildings = new HashSet<>();
 
     public Long getId() {
         return id;
@@ -58,12 +54,12 @@ public class Canton extends ImportedEntity {
         this.id = id;
     }
 
-    public int getCode() {
-        return code;
+    public int getNumber() {
+        return number;
     }
 
-    public void setCode(int code) {
-        this.code = code;
+    public void setNumber(int number) {
+        this.number = number;
     }
 
     public String getName() {
@@ -74,26 +70,26 @@ public class Canton extends ImportedEntity {
         this.name = name;
     }
 
-    public District getDistrict() {
-        return district;
+    public Locality getLocality() {
+        return locality;
     }
 
-    public void setDistrict(District district) {
-        this.district = district;
+    public void setLocality(Locality locality) {
+        this.locality = locality;
     }
 
-    public Set<Commune> getCommunes() {
-        return communes;
+    public Set<Building> getBuildings() {
+        return buildings;
     }
 
-    public void setCommunes(Set<Commune> communes) {
-        this.communes = communes;
+    public void setBuildings(Set<Building> buildings) {
+        this.buildings = buildings;
     }
 
     @Override
     public int hashCode() {
         int hash = 5;
-        hash = 23 * hash + Objects.hashCode(this.code);
+        hash = 61 * hash + this.number;
         return hash;
     }
 
@@ -108,8 +104,8 @@ public class Canton extends ImportedEntity {
         if (getClass() != obj.getClass()) {
             return false;
         }
-        final Canton other = (Canton) obj;
-        if (!Objects.equals(this.code, other.code)) {
+        final Quarter other = (Quarter) obj;
+        if (this.number != other.number) {
             return false;
         }
         return true;

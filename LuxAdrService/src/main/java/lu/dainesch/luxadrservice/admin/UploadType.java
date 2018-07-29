@@ -7,5 +7,10 @@ public enum UploadType {
     DISTRICT,
     COMMUNE,
     LOCALITY,
-    LOCALITY_ALT
+    LOCALITY_ALT,
+    QUARTER,
+    STREET,
+    STREET_ALT,
+    BUILDING,
+    BUILDING_DES
 }

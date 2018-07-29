@@ -1,5 +1,8 @@
 package lu.dainesch.luxadrservice.adr.entity;
 
+import java.util.HashSet;
+import java.util.Objects;
+import java.util.Set;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -10,6 +13,7 @@ import javax.persistence.Id;
 import javax.persistence.Index;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.TableGenerator;
 import lu.dainesch.luxadrservice.base.ImportedEntity;
@@ -19,8 +23,10 @@ import lu.dainesch.luxadrservice.base.ImportedEntity;
     @Index(name = "IDX_POSTALCODE_CODE", columnList = "CODE")
 })
 @NamedQueries({
-    @NamedQuery(name = "postalcode.invalidate", query = "UPDATE PostalCode SET active = false"),
-    @NamedQuery(name = "postalcode.deleted", query = "UPDATE PostalCode SET until=:imp WHERE active = false and until is null"),
+    @NamedQuery(name = "postalcode.invalidate", query = "UPDATE PostalCode SET active = false")
+    ,
+    @NamedQuery(name = "postalcode.deleted", query = "UPDATE PostalCode SET until=:imp WHERE active = false and until is null")
+    ,
     @NamedQuery(name = "postalcode.by.code", query = "SELECT p from PostalCode p where p.code = :code")
 })
 public class PostalCode extends ImportedEntity {
@@ -28,6 +34,7 @@ public class PostalCode extends ImportedEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.TABLE, generator = "PostalCode")
     @TableGenerator(name = "PostalCode")
+    @Column(name = "PC_ID")
     private Long id;
 
     @Column(name = "CODE", length = 4, unique = true)
@@ -45,6 +52,9 @@ public class PostalCode extends ImportedEntity {
 
     @Column(name = "MAX_MAILBOX")
     private Integer maxMailbox;
+
+    @OneToMany(mappedBy = "postalCode")
+    private Set<Building> buildings = new HashSet<>();
 
     public Long getId() {
         return id;
@@ -92,6 +102,39 @@ public class PostalCode extends ImportedEntity {
 
     public void setMaxMailbox(Integer maxMailbox) {
         this.maxMailbox = maxMailbox;
+    }
+
+    public Set<Building> getBuildings() {
+        return buildings;
+    }
+
+    public void setBuildings(Set<Building> buildings) {
+        this.buildings = buildings;
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 7;
+        hash = 29 * hash + Objects.hashCode(this.code);
+        return hash;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final PostalCode other = (PostalCode) obj;
+        if (!Objects.equals(this.code, other.code)) {
+            return false;
+        }
+        return true;
     }
 
 }

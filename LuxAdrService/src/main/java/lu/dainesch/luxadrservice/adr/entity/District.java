@@ -30,9 +30,12 @@ public class District extends ImportedEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.TABLE, generator = "District")
     @TableGenerator(name = "District")
+    @Column(name = "DIST_ID")
     private Long id;
+    
     @Column(name = "CODE", nullable = false, unique = true, length = 4)
     private String code;
+    
     @Column(name = "NAME", nullable = false, length = 40)
     private String name;
     

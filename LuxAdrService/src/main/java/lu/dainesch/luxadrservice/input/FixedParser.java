@@ -28,6 +28,7 @@ public class FixedParser implements AutoCloseable {
 
     private boolean done = false;
     private String currentLine = null;
+    private int linePos = 0;
 
     public FixedParser(InputStream input, int... colSpec) {
         this.colEnd = new int[colSpec.length];
@@ -50,6 +51,7 @@ public class FixedParser implements AutoCloseable {
         }
 
         currentLine = reader.readLine();
+        linePos++;
         if (currentLine == null) {
             done = true;
             return false;
@@ -68,7 +70,7 @@ public class FixedParser implements AutoCloseable {
             throw new NoSuchElementException("No line left");
         }
 
-        ParsedLine ret = new ParsedLine(colEnd.length);
+        ParsedLine ret = new ParsedLine(linePos, colEnd.length);
         int start = 0;
         for (int i = 0; i < colEnd.length; i++) {
             ret.setValue(i, currentLine.substring(start, colEnd[i]).trim());
@@ -86,9 +88,11 @@ public class FixedParser implements AutoCloseable {
     public static class ParsedLine {
 
         private final String[] values;
+        private final int linePos;
 
-        public ParsedLine(int count) {
+        public ParsedLine(int pos, int count) {
             this.values = new String[count];
+            this.linePos = pos;
         }
 
         void setValue(int pos, String val) {
@@ -193,7 +197,7 @@ public class FixedParser implements AutoCloseable {
 
         @Override
         public String toString() {
-            return Arrays.toString(values);
+            return linePos + ": " + Arrays.toString(values);
         }
 
     }

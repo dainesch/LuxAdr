@@ -32,6 +32,7 @@ public class Locality extends ImportedEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.TABLE, generator = "Locality")
     @TableGenerator(name = "Locality")
+    @Column(name = "LOC_ID")
     private Long id;
 
     @Column(name = "NUMBER", nullable = false, unique = true)
@@ -42,16 +43,22 @@ public class Locality extends ImportedEntity {
 
     @Column(name = "CODE", nullable = false)
     private int code;
-    
+
     @Column(name = "CITY", nullable = false)
     private boolean city;
-        
+
     @ManyToOne
     @JoinColumn(name = "COMM_ID", nullable = false)
     private Commune commune;
-    
+
     @OneToMany(mappedBy = "locality", fetch = FetchType.EAGER, orphanRemoval = true, cascade = CascadeType.ALL)
     private Set<AlternateName> altNames = new HashSet<>();
+
+    @OneToMany(mappedBy = "locality")
+    private Set<Quarter> quarters = new HashSet<>();
+
+    @OneToMany(mappedBy = "locality")
+    private Set<Street> streets = new HashSet<>();
 
     public Long getId() {
         return id;
@@ -108,8 +115,22 @@ public class Locality extends ImportedEntity {
     public void setAltNames(Set<AlternateName> altNames) {
         this.altNames = altNames;
     }
-    
-    
+
+    public Set<Quarter> getQuarters() {
+        return quarters;
+    }
+
+    public void setQuarters(Set<Quarter> quarters) {
+        this.quarters = quarters;
+    }
+
+    public Set<Street> getStreets() {
+        return streets;
+    }
+
+    public void setStreets(Set<Street> streets) {
+        this.streets = streets;
+    }
 
     @Override
     public int hashCode() {
@@ -135,7 +156,5 @@ public class Locality extends ImportedEntity {
         }
         return true;
     }
-    
-    
 
 }

@@ -19,12 +19,15 @@ import javax.persistence.TableGenerator;
 @Table(name = "ALT_NAME")
 @NamedQueries({
     @NamedQuery(name = "alternatename.del.loc", query = "DELETE FROM AlternateName WHERE localiity != null")
+    ,
+    @NamedQuery(name = "alternatename.del.str", query = "DELETE FROM AlternateName WHERE street != null")
 })
 public class AlternateName implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.TABLE, generator = "AlternateName")
     @TableGenerator(name = "AlternateName")
+    @Column(name = "AN_ID")
     private Long id;
 
     @Column(name = "LANG", length = 3)
@@ -35,6 +38,10 @@ public class AlternateName implements Serializable {
     @ManyToOne
     @JoinColumn(name = "LOC_ID", nullable = true)
     private Locality locality;
+
+    @ManyToOne
+    @JoinColumn(name = "STR_ID", nullable = true)
+    private Street street;
 
     public AlternateName() {
 
@@ -77,11 +84,21 @@ public class AlternateName implements Serializable {
         this.locality = locality;
     }
 
+    public Street getStreet() {
+        return street;
+    }
+
+    public void setStreet(Street street) {
+        this.street = street;
+    }
+
     @Override
     public int hashCode() {
         int hash = 7;
-        hash = 53 * hash + Objects.hashCode(this.lang);
-        hash = 53 * hash + Objects.hashCode(this.locality);
+        hash = 79 * hash + Objects.hashCode(this.lang);
+        hash = 79 * hash + Objects.hashCode(this.name);
+        hash = 79 * hash + Objects.hashCode(this.locality);
+        hash = 79 * hash + Objects.hashCode(this.street);
         return hash;
     }
 
@@ -100,10 +117,18 @@ public class AlternateName implements Serializable {
         if (!Objects.equals(this.lang, other.lang)) {
             return false;
         }
+        if (!Objects.equals(this.name, other.name)) {
+            return false;
+        }
         if (!Objects.equals(this.locality, other.locality)) {
+            return false;
+        }
+        if (!Objects.equals(this.street, other.street)) {
             return false;
         }
         return true;
     }
+
+   
 
 }
