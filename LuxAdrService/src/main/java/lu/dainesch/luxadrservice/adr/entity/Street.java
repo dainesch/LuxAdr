@@ -1,7 +1,10 @@
 package lu.dainesch.luxadrservice.adr.entity;
 
+import java.math.BigDecimal;
 import java.util.HashSet;
 import java.util.Set;
+import javax.json.Json;
+import javax.json.JsonObjectBuilder;
 import javax.persistence.Cacheable;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -130,6 +133,18 @@ public class Street extends ImportedEntity {
 
     public void setBuildings(Set<Building> buildings) {
         this.buildings = buildings;
+    }
+
+    public JsonObjectBuilder toJson() {
+        JsonObjectBuilder ret = Json.createObjectBuilder()
+                .add("id", id)
+                .add("active", active)
+                .add("name", name);
+        if (streetCode != null) {
+            ret.add("streetCode", streetCode);
+        }
+        return ret;
+
     }
 
     @Override

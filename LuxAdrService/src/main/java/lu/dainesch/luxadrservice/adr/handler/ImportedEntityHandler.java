@@ -9,17 +9,21 @@ import lu.dainesch.luxadrservice.input.FixedParser;
 
 public abstract class ImportedEntityHandler<I extends ImportedEntity> {
 
-    private final String entity;
+    private final Class<I> clazz;
 
     @PersistenceContext
     protected EntityManager em;
 
     public ImportedEntityHandler(Class<I> clazz) {
-        entity = clazz.getSimpleName().toLowerCase();
+        this.clazz = clazz;
+    }
+    
+    public I getById(Long id) {
+        return em.find(clazz, id);
     }
 
     public int postprocess(Import imp) {
-        return em.createNamedQuery(entity + ".invalidate")
+        return em.createNamedQuery(clazz.getSimpleName().toLowerCase() + ".invalidate")
                 .setParameter("imp", imp).executeUpdate();
 
     }

@@ -3,6 +3,8 @@ package lu.dainesch.luxadrservice.adr.entity;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
+import javax.json.Json;
+import javax.json.JsonObjectBuilder;
 import javax.persistence.Cacheable;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -28,6 +30,27 @@ import lu.dainesch.luxadrservice.base.ImportedEntity;
     @NamedQuery(name = "postalcode.invalidate", query = "UPDATE PostalCode SET active = false, until = :imp where current != :imp")
     ,
     @NamedQuery(name = "postalcode.by.code", query = "SELECT p from PostalCode p where p.code = :code")
+            ,
+    @NamedQuery(name = "postalcode.search.code", query = "SELECT p from PostalCode p "
+            + "where p.code like :code "
+            + "and p.active = true "
+            + "order by p.code")
+    ,
+    @NamedQuery(name = "postalcode.by.id.streets",
+            query = "SELECT distinct s FROM PostalCode c "
+            + "join c.buildings b "
+            + "join b.street s "
+            + "where c.id = :id "
+            + "order by s.sortValue")
+    ,
+    @NamedQuery(name = "postalcode.by.code.streets",
+            query = "SELECT distinct s FROM PostalCode c "
+            + "join c.buildings b "
+            + "join b.street s "
+            + "where c.code = :code "
+            + "and c.active = true "
+            + "and s.active = true "
+            + "order by s.sortValue")
 })
 public class PostalCode extends ImportedEntity {
 
@@ -110,6 +133,19 @@ public class PostalCode extends ImportedEntity {
 
     public void setBuildings(Set<Building> buildings) {
         this.buildings = buildings;
+    }
+
+    public JsonObjectBuilder toJson() {
+        JsonObjectBuilder ret = Json.createObjectBuilder()
+                .add("id", id)
+                .add("active", active)
+                .add("code", code)
+                .add("type", type.toString());
+        if (type == PostCodeType.Mailbox) {
+            ret.add("minMailbox", minMailbox);
+            ret.add("maxMailbox", maxMailbox);
+        }
+        return ret;
     }
 
     @Override

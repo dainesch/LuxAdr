@@ -1,5 +1,6 @@
 package lu.dainesch.luxadrservice.adr.handler;
 
+import java.util.List;
 import java.util.concurrent.Future;
 import javax.ejb.AsyncResult;
 import javax.ejb.Asynchronous;
@@ -7,6 +8,8 @@ import javax.ejb.Stateless;
 import javax.persistence.NoResultException;
 import lu.dainesch.luxadrservice.adr.entity.PostCodeType;
 import lu.dainesch.luxadrservice.adr.entity.PostalCode;
+import lu.dainesch.luxadrservice.adr.entity.Street;
+import lu.dainesch.luxadrservice.api.SearchRequest;
 import lu.dainesch.luxadrservice.base.Import;
 import lu.dainesch.luxadrservice.input.FixedParser;
 
@@ -30,6 +33,24 @@ public class PostCodeHandler extends ImportedEntityHandler<PostalCode> {
         } catch (NoResultException ex) {
             return null;
         }
+    }
+
+    public List<Street> getStreets(Long id) {
+        return em.createNamedQuery("postalcode.by.id.streets", Street.class)
+                .setParameter("id", id)
+                .getResultList();
+    }
+
+    public List<Street> getStreets(String code) {
+        return em.createNamedQuery("postalcode.by.code.streets", Street.class)
+                .setParameter("code", code)
+                .getResultList();
+    }
+
+    public List<PostalCode> search(SearchRequest req) {
+        return em.createNamedQuery("postalcode.search.code", PostalCode.class)
+                .setParameter("code", req.getValue() + "%")
+                .setMaxResults(req.getMaxResults()).getResultList();
     }
 
     public PostalCode createOrUpdate(PostalCode code, Import imp) {
