@@ -1,6 +1,7 @@
 package lu.dainesch.luxadrservice.adr.handler;
 
 import java.util.Date;
+import java.util.List;
 import java.util.concurrent.Future;
 import javax.ejb.AsyncResult;
 import javax.ejb.Asynchronous;
@@ -9,6 +10,9 @@ import javax.inject.Inject;
 import javax.persistence.NoResultException;
 import lu.dainesch.luxadrservice.adr.entity.AlternateName;
 import lu.dainesch.luxadrservice.adr.entity.Locality;
+import lu.dainesch.luxadrservice.adr.entity.PostalCode;
+import lu.dainesch.luxadrservice.adr.entity.Street;
+import lu.dainesch.luxadrservice.api.SearchRequest;
 import lu.dainesch.luxadrservice.base.Import;
 import lu.dainesch.luxadrservice.input.FixedParser;
 
@@ -32,6 +36,24 @@ public class LocalityHandler extends ImportedEntityHandler<Locality> {
     @Override
     public int[] getAltLineFormat() {
         return new int[]{3, 40, 40, 1, 10, 5};
+    }
+
+    public List<Street> getStreets(Long id) {
+        return em.createNamedQuery("locality.by.id.streets", Street.class)
+                .setParameter("id", id)
+                .getResultList();
+    }
+
+    public List<PostalCode> getPostCodes(Long id) {
+        return em.createNamedQuery("locality.by.id.postcodes", PostalCode.class)
+                .setParameter("id", id)
+                .getResultList();
+    }
+
+    public List<Locality> search(SearchRequest req) {
+        return em.createNamedQuery("locality.search.name", Locality.class)
+                .setParameter("name", req.getValue())
+                .setMaxResults(req.getMaxResults()).getResultList();
     }
 
     public Locality getByNumber(int num) {

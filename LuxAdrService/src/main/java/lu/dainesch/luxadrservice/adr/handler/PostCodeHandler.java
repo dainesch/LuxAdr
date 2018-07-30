@@ -49,7 +49,7 @@ public class PostCodeHandler extends ImportedEntityHandler<PostalCode> {
 
     public List<PostalCode> search(SearchRequest req) {
         return em.createNamedQuery("postalcode.search.code", PostalCode.class)
-                .setParameter("code", req.getValue() + "%")
+                .setParameter("code", req.getValue())
                 .setMaxResults(req.getMaxResults()).getResultList();
     }
 

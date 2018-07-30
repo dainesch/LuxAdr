@@ -8,6 +8,7 @@ public class SearchRequest implements Serializable {
 
     private int corrId;
     private int maxResults;
+    private Boolean beginning;
     private String value;
 
     public int getCorrId() {
@@ -25,6 +26,16 @@ public class SearchRequest implements Serializable {
     public void setMaxResults(int maxResults) {
         this.maxResults = maxResults;
     }
+
+    public Boolean isBeginning() {
+        return beginning;
+    }
+
+    public void setBeginning(Boolean beginning) {
+        this.beginning = beginning;
+    }
+    
+    
 
     public String getValue() {
         return value;

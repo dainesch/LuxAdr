@@ -2,6 +2,9 @@ package lu.dainesch.luxadrservice.adr.entity;
 
 import java.util.HashSet;
 import java.util.Set;
+import javax.json.Json;
+import javax.json.JsonArrayBuilder;
+import javax.json.JsonObjectBuilder;
 import javax.persistence.Cacheable;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -26,6 +29,29 @@ import lu.dainesch.luxadrservice.base.ImportedEntity;
     @NamedQuery(name = "locality.invalidate", query = "UPDATE Locality SET active = false, until = :imp where current != :imp")
     ,
     @NamedQuery(name = "locality.by.number", query = "SELECT l from Locality l where l.number = :num")
+    ,
+    @NamedQuery(name = "locality.search.name",
+            query = "SELECT distinct l from Locality l "
+            + "left join l.altNames a "
+            + "where l.active = true "
+            + "and ("
+            + " LOWER(l.name) like :name "
+            + " OR LOWER(a.name) like :name"
+            + ")")
+    ,
+    @NamedQuery(name = "locality.by.id.streets",
+            query = "SELECT distinct s FROM Locality l "
+            + "join l.streets s "
+            + "where l.id = :id "
+            + "order by s.sortValue")
+    ,
+    @NamedQuery(name = "locality.by.id.postcodes",
+            query = "SELECT distinct p FROM Locality l "
+            + "join l.streets s "
+            + "join s.buildings b "
+            + "join b.postalCode p "
+            + "where l.id = :id "
+            + "order by p.code")
 })
 public class Locality extends ImportedEntity {
 
@@ -130,6 +156,21 @@ public class Locality extends ImportedEntity {
 
     public void setStreets(Set<Street> streets) {
         this.streets = streets;
+    }
+
+    public JsonObjectBuilder toJson() {
+        JsonObjectBuilder ret = Json.createObjectBuilder()
+                .add("id", id)
+                .add("active", active)
+                .add("name", name)
+                .add("city", city);
+        if (!altNames.isEmpty()) {
+            JsonArrayBuilder locs = Json.createArrayBuilder();
+            altNames.forEach(a -> locs.add(a.toJson()));
+            ret.add("altNames", locs);
+        }
+        return ret;
+
     }
 
     @Override

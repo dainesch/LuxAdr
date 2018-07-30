@@ -3,6 +3,8 @@ package lu.dainesch.luxadrservice.adr.entity;
 import java.io.Serializable;
 import java.util.Locale;
 import java.util.Objects;
+import javax.json.Json;
+import javax.json.JsonObjectBuilder;
 import javax.persistence.Cacheable;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -92,6 +94,15 @@ public class AlternateName implements Serializable {
 
     public void setStreet(Street street) {
         this.street = street;
+    }
+    
+    public JsonObjectBuilder toJson() {
+        JsonObjectBuilder ret = Json.createObjectBuilder();
+        if (lang!=null) {
+            ret.add("lang", lang);
+        }
+        ret.add("name", name);
+        return ret;
     }
 
     @Override

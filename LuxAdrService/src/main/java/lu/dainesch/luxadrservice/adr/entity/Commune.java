@@ -3,6 +3,8 @@ package lu.dainesch.luxadrservice.adr.entity;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
+import javax.json.Json;
+import javax.json.JsonObjectBuilder;
 import javax.persistence.Cacheable;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -90,6 +92,15 @@ public class Commune extends ImportedEntity {
         this.localities = localities;
     }
 
+    public JsonObjectBuilder toJson() {
+        JsonObjectBuilder ret = Json.createObjectBuilder()
+                .add("id", id)
+                .add("active", active)
+                .add("name", name);
+        return ret;
+
+    }
+
     @Override
     public int hashCode() {
         int hash = 5;
@@ -118,7 +129,5 @@ public class Commune extends ImportedEntity {
         }
         return true;
     }
-
- 
 
 }
