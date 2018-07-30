@@ -68,11 +68,16 @@ public class HouseNumber implements Serializable, Comparable<HouseNumber> {
         this.building = building;
     }
 
-    public JsonObjectBuilder toJson() {
+    public JsonObjectBuilder toJson(boolean includeBuilding) {
         JsonObjectBuilder ret = Json.createObjectBuilder()
                 .add("id", id)
-                .add("number", number)
-                .add("buildingId", building.getId());
+                .add("number", number);
+        if (includeBuilding) {
+            ret.add("building", building.toJson(false));
+        } else {
+            ret.add("buildingId", building.getId());
+        }
+
         return ret;
 
     }

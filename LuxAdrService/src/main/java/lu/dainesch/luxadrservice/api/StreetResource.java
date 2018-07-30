@@ -56,7 +56,7 @@ public class StreetResource {
         List<HouseNumber> nums = strHand.getHouseNumbers(id);
         JsonArrayBuilder ret = Json.createArrayBuilder();
         nums.forEach((st) -> {
-            ret.add(st.toJson());
+            ret.add(st.toJson(false));
         });
 
         return Response.ok(ret.build()).build();
