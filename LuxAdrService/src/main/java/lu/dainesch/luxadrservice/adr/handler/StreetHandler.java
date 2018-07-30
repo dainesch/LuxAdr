@@ -1,6 +1,8 @@
 package lu.dainesch.luxadrservice.adr.handler;
 
+import java.util.Collections;
 import java.util.Date;
+import java.util.List;
 import java.util.concurrent.Future;
 import javax.ejb.AsyncResult;
 import javax.ejb.Asynchronous;
@@ -8,7 +10,11 @@ import javax.ejb.Stateless;
 import javax.inject.Inject;
 import javax.persistence.NoResultException;
 import lu.dainesch.luxadrservice.adr.entity.AlternateName;
+import lu.dainesch.luxadrservice.adr.entity.HouseNumber;
+import lu.dainesch.luxadrservice.adr.entity.Locality;
+import lu.dainesch.luxadrservice.adr.entity.PostalCode;
 import lu.dainesch.luxadrservice.adr.entity.Street;
+import lu.dainesch.luxadrservice.api.SearchRequest;
 import lu.dainesch.luxadrservice.base.Import;
 import lu.dainesch.luxadrservice.input.FixedParser;
 
@@ -30,6 +36,26 @@ public class StreetHandler extends ImportedEntityHandler<Street> {
     @Override
     public int[] getAltLineFormat() {
         return new int[]{3, 40, 40, 1, 10, 5, 80, 1};
+    }
+
+    public List<PostalCode> getPostCodes(Long id) {
+        return em.createNamedQuery("street.by.id.postcodes", PostalCode.class)
+                .setParameter("id", id)
+                .getResultList();
+    }
+
+    public List<HouseNumber> getHouseNumbers(Long id) {
+        List<HouseNumber> ret = em.createNamedQuery("street.by.id.numbers", HouseNumber.class)
+                .setParameter("id", id)
+                .getResultList();
+        Collections.sort(ret);
+        return ret;
+    }
+
+    public List<Street> search(SearchRequest req) {
+        return em.createNamedQuery("street.search.name", Street.class)
+                .setParameter("name", req.getValue())
+                .setMaxResults(req.getMaxResults()).getResultList();
     }
 
     public Street getByNumber(int num) {

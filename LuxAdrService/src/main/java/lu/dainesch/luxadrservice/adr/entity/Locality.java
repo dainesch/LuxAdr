@@ -37,7 +37,8 @@ import lu.dainesch.luxadrservice.base.ImportedEntity;
             + "and ("
             + " LOWER(l.name) like :name "
             + " OR LOWER(a.name) like :name"
-            + ")")
+            + ") "
+            + "order by l.name ")
     ,
     @NamedQuery(name = "locality.by.id.streets",
             query = "SELECT distinct s FROM Locality l "

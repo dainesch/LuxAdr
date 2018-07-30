@@ -2,6 +2,8 @@ package lu.dainesch.luxadrservice.adr.entity;
 
 import java.io.Serializable;
 import java.util.Objects;
+import javax.json.Json;
+import javax.json.JsonObjectBuilder;
 import javax.persistence.Cacheable;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -12,11 +14,15 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.TableGenerator;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Entity
 @Table(name = "HOUSENUMBER")
 @Cacheable
-public class HouseNumber implements Serializable {
+public class HouseNumber implements Serializable, Comparable<HouseNumber> {
+
+    private static final Logger LOG = LoggerFactory.getLogger(HouseNumber.class);
 
     @Id
     @GeneratedValue(strategy = GenerationType.TABLE, generator = "HouseNumber")
@@ -62,6 +68,15 @@ public class HouseNumber implements Serializable {
         this.building = building;
     }
 
+    public JsonObjectBuilder toJson() {
+        JsonObjectBuilder ret = Json.createObjectBuilder()
+                .add("id", id)
+                .add("number", number)
+                .add("buildingId", building.getId());
+        return ret;
+
+    }
+
     @Override
     public int hashCode() {
         int hash = 7;
@@ -85,6 +100,38 @@ public class HouseNumber implements Serializable {
             return false;
         }
         return true;
+    }
+
+    @Override
+    public int compareTo(HouseNumber o) {
+        if (number.equals(o.number)) {
+            return 0;
+        }
+        String[] a = splitNum(number);
+        String[] b = splitNum(o.number);
+
+        try {
+            int an = Integer.parseInt(a[0]);
+            int bn = Integer.parseInt(b[0]);
+            if (an > bn) {
+                return 1;
+            } else if (an < bn) {
+                return -1;
+            } else if (a.length == 1) {
+                return -1;
+            } else if (b.length == 1) {
+                return 1;
+            } else {
+                return a[1].compareTo(b[1]);
+            }
+        } catch (NumberFormatException ex) {
+            LOG.error("Error comparing alphanum " + number + " to " + o.number);
+        }
+        return 0;
+    }
+
+    private static String[] splitNum(String str) {
+        return str.split("(?i)((?<=[A-Z])(?=\\d))|((?<=\\d)(?=[A-Z]))");
     }
 
 }

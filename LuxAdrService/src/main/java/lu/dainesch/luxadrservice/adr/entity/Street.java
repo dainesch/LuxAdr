@@ -1,5 +1,6 @@
 package lu.dainesch.luxadrservice.adr.entity;
 
+import java.math.BigDecimal;
 import java.util.HashSet;
 import java.util.Set;
 import javax.json.Json;
@@ -29,6 +30,30 @@ import lu.dainesch.luxadrservice.base.ImportedEntity;
     @NamedQuery(name = "street.invalidate", query = "UPDATE Street SET active = false, until = :imp where current != :imp")
     ,
     @NamedQuery(name = "street.by.num", query = "SELECT s from Street s where s.number = :num")
+    ,
+    @NamedQuery(name = "street.by.id.postcodes",
+            query = "SELECT distinct p from Street s "
+            + "join s.buildings b "
+            + "join b.postalCode p "
+            + "where s.id = :id "
+            + "order by p.code ")
+    ,
+    @NamedQuery(name = "street.by.id.numbers",
+            query = "SELECT distinct n from Street s "
+            + "join s.buildings b "
+            + "join b.numbers n "
+            + "where s.id = :id ")
+    ,
+    @NamedQuery(name = "street.search.name",
+            query = "SELECT distinct s from Street s "
+            + "left join s.altNames a "
+            + "where s.active = true "
+            + "and ("
+            + " LOWER(s.name) like :name "
+            + " OR LOWER(a.name) like :name"
+            + ") "
+            + "order by s.sortValue")
+
 })
 public class Street extends ImportedEntity {
 
@@ -135,7 +160,7 @@ public class Street extends ImportedEntity {
         this.buildings = buildings;
     }
 
-    public JsonObjectBuilder toJson() {
+    public JsonObjectBuilder toJson(boolean includeLoc) {
         JsonObjectBuilder ret = Json.createObjectBuilder()
                 .add("id", id)
                 .add("active", active)
@@ -148,6 +173,10 @@ public class Street extends ImportedEntity {
             altNames.forEach(a -> locs.add(a.toJson()));
             ret.add("altNames", locs);
         }
+        if (includeLoc) {
+            ret.add("locality", locality.toJson());
+        }
+
         return ret;
 
     }

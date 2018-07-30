@@ -43,7 +43,7 @@ public class PostCodeResource {
         List<Street> streets = pcHand.getStreets(id);
         JsonArrayBuilder ret = Json.createArrayBuilder();
         streets.forEach((st) -> {
-            ret.add(st.toJson());
+            ret.add(st.toJson(true));
         });
 
         return Response.ok(ret.build()).build();
@@ -68,7 +68,7 @@ public class PostCodeResource {
         List<Street> streets = pcHand.getStreets(code);
         JsonArrayBuilder ret = Json.createArrayBuilder();
         streets.forEach((st) -> {
-            ret.add(st.toJson());
+            ret.add(st.toJson(true));
         });
 
         return Response.ok(ret.build()).build();

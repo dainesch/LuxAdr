@@ -12,50 +12,50 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import lu.dainesch.luxadrservice.adr.entity.Locality;
+import lu.dainesch.luxadrservice.adr.entity.HouseNumber;
 import lu.dainesch.luxadrservice.adr.entity.PostalCode;
 import lu.dainesch.luxadrservice.adr.entity.Street;
-import lu.dainesch.luxadrservice.adr.handler.LocalityHandler;
+import lu.dainesch.luxadrservice.adr.handler.StreetHandler;
 
-@Path("locality")
+@Path("street")
 @Consumes(MediaType.APPLICATION_JSON)
 @Produces(MediaType.APPLICATION_JSON)
-public class LocalityResource {
+public class StreetResource {
 
     @Inject
     private ApiService as;
     @Inject
-    private LocalityHandler locHand;
+    private StreetHandler strHand;
 
     @GET
     @Path("{id}")
     public Response getById(@PathParam("id") Long id) {
-        Locality loc = locHand.getById(id);
-        if (loc == null) {
+        Street str = strHand.getById(id);
+        if (str == null) {
             return Response.status(Response.Status.NOT_FOUND).build();
         }
 
-        return Response.ok(loc.toJson().build()).build();
+        return Response.ok(str.toJson(true).build()).build();
     }
 
     @GET
-    @Path("{id}/streets")
-    public Response getStreets(@PathParam("id") Long id) {
-        List<Street> streets = locHand.getStreets(id);
+    @Path("{id}/postcodes")
+    public Response getPostCodes(@PathParam("id") Long id) {
+        List<PostalCode> streets = strHand.getPostCodes(id);
         JsonArrayBuilder ret = Json.createArrayBuilder();
         streets.forEach((st) -> {
-            ret.add(st.toJson(false));
+            ret.add(st.toJson());
         });
 
         return Response.ok(ret.build()).build();
     }
 
     @GET
-    @Path("{id}/postcodes")
-    public Response getPostCodes(@PathParam("id") Long id) {
-        List<PostalCode> streets = locHand.getPostCodes(id);
+    @Path("{id}/numbers")
+    public Response getNumbers(@PathParam("id") Long id) {
+        List<HouseNumber> nums = strHand.getHouseNumbers(id);
         JsonArrayBuilder ret = Json.createArrayBuilder();
-        streets.forEach((st) -> {
+        nums.forEach((st) -> {
             ret.add(st.toJson());
         });
 
@@ -68,10 +68,10 @@ public class LocalityResource {
         if (!as.validateAndFix(req, true)) {
             return as.emptyArrayResponse();
         }
-        List<Locality> locs = locHand.search(req);
+        List<Street> streets = strHand.search(req);
         JsonArrayBuilder ret = Json.createArrayBuilder();
-        locs.forEach((loc) -> {
-            ret.add(loc.toJson());
+        streets.forEach((str) -> {
+            ret.add(str.toJson(true));
         });
 
         return Response.ok(as.wrapSearchResult(req, ret)).build();
