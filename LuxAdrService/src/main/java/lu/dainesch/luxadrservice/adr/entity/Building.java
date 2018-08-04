@@ -13,17 +13,21 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.Index;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.TableGenerator;
 import lu.dainesch.luxadrservice.base.ImportedEntity;
 
 @Entity
-@Table(name = "BUILDING")
+@Table(name = "BUILDING", indexes = {
+    @Index(name = "IDX_BUILDING_NUMBER", columnList = "NUMBER")
+})
 @Cacheable
 @NamedQueries({
     @NamedQuery(name = "building.invalidate", query = "UPDATE Building SET active = false, until = :imp where current != :imp")
@@ -31,6 +35,14 @@ import lu.dainesch.luxadrservice.base.ImportedEntity;
     @NamedQuery(name = "building.by.num", query = "SELECT b from Building b where b.number = :num")
     ,
     @NamedQuery(name = "building.by.nums", query = "SELECT b from Building b where b.number IN :nums")
+    ,
+    @NamedQuery(name = "building.geo.rect",
+            query = "SELECT b from Building b "
+            + "JOIN b.coordinates c "
+            + "where c.latitude > :minLat AND c.longitude > :minLon "
+            + "and c.latitude < :maxLat AND c.longitude < :maxLon "
+            // aproximate distance
+            + "order by ABS(c.latitude - :lat) * ABS(c.latitude - :lat) + ABS(c.longitude - :lon) * ABS(c.longitude - :lon) * :cos asc")
 })
 public class Building extends ImportedEntity {
 
@@ -60,6 +72,10 @@ public class Building extends ImportedEntity {
 
     @OneToMany(mappedBy = "building", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     private Set<HouseNumber> numbers = new HashSet<>();
+
+    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = "COO_ID")
+    private Coordinates coordinates;
 
     public Long getId() {
         return id;
@@ -117,6 +133,14 @@ public class Building extends ImportedEntity {
         this.street = street;
     }
 
+    public Coordinates getCoordinates() {
+        return coordinates;
+    }
+
+    public void setCoordinates(Coordinates coordinates) {
+        this.coordinates = coordinates;
+    }
+
     public JsonObjectBuilder toJson(boolean includeNumbers) {
         JsonObjectBuilder ret = Json.createObjectBuilder()
                 .add("id", id)
@@ -131,6 +155,9 @@ public class Building extends ImportedEntity {
             JsonArrayBuilder arr = Json.createArrayBuilder();
             numbers.forEach(n -> arr.add(n.toJson(false)));
             ret.add("numbers", arr);
+        }
+        if (coordinates != null) {
+            ret.add("coordinates", coordinates.toJson());
         }
 
         return ret;

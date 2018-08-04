@@ -34,6 +34,8 @@ public class AdminFileServlet extends HttpServlet {
         try {
             if ("ALL".equalsIgnoreCase(sType)) {
                 impServ.updateAll(file.getInputStream());
+            } else if ("GEO".equals(sType)) {
+                impServ.importGeodata(file.getInputStream());
             } else {
                 ImportStep type = ImportStep.valueOf(sType);
                 impServ.update(null, type, file.getInputStream());

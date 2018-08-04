@@ -1,7 +1,10 @@
 package lu.dainesch.luxadrservice.adr.handler;
 
+import java.awt.geom.Rectangle2D;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.concurrent.Future;
 import java.util.regex.Pattern;
@@ -10,6 +13,7 @@ import javax.ejb.Asynchronous;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
 import javax.persistence.NoResultException;
+import lu.dainesch.luxadrservice.GeoUtil;
 import lu.dainesch.luxadrservice.adr.entity.Building;
 import lu.dainesch.luxadrservice.adr.entity.HouseNumber;
 import lu.dainesch.luxadrservice.base.Import;
@@ -52,6 +56,47 @@ public class BuildingHandler extends ImportedEntityHandler<Building> {
         } catch (NoResultException ex) {
             return null;
         }
+    }
+
+    public Building getNearest(float lat, float lon, float distance) {
+
+        Rectangle2D.Float r = GeoUtil.getBoundingBox(lat, lon, distance);
+
+        List<Building> ret = em.createNamedQuery("building.geo.rect", Building.class)
+                .setParameter("minLat", r.getMinX())
+                .setParameter("maxLat", r.getMaxX())
+                .setParameter("minLon", r.getMinY())
+                .setParameter("maxLon", r.getMaxY())
+                .setParameter("lat", lat)
+                .setParameter("lon", lon)
+                .setParameter("cos", Math.cos(Math.toRadians(lat)))
+                .setMaxResults(5)
+                .getResultList();
+
+        if (ret.isEmpty()) {
+            return null;
+        }
+
+        Collections.sort(ret, GeoUtil.getNearestBuildingComp(lat, lon));
+
+        return ret.get(0);
+    }
+
+    public List<Building> getInRange(float lat, float lon, float distance) {
+
+        Rectangle2D.Float r = GeoUtil.getBoundingBox(lat, lon, distance);
+
+        List<Building> ret = em.createNamedQuery("building.geo.rect", Building.class)
+                .setParameter("minLat", r.getMinX())
+                .setParameter("maxLat", r.getMaxX())
+                .setParameter("minLon", r.getMinY())
+                .setParameter("maxLon", r.getMaxY())
+                .setParameter("lat", lat)
+                .setParameter("lon", lon)
+                .setParameter("cos", Math.cos(Math.toRadians(lat)))
+                .getResultList();
+        return ret;
+
     }
 
     public Building createOrUpdate(Building bui, Import imp) {

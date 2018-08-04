@@ -1,4 +1,4 @@
-package lu.dainesch.luxadrservice.api;
+package lu.dainesch.luxadrservice.api.dto;
 
 import java.io.Serializable;
 import javax.xml.bind.annotation.XmlRootElement;

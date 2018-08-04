@@ -12,6 +12,13 @@
             <p><button type="submit">Submit</button>
         </form>
 
+        <h4>GEO addresses.geojson</h4>
+        <form action="http://localhost:8080/LuxAdrService/admin/upload" method="post" enctype="multipart/form-data">
+            <p><input type="hidden" name="type" value="GEO">
+            <p><input type="file" name="file">
+            <p><button type="submit">Submit</button>
+        </form>
+
         <h4>CODEPT</h4>
         <form action="http://localhost:8080/LuxAdrService/admin/upload" method="post" enctype="multipart/form-data">
             <p><input type="hidden" name="type" value="POSTALCODE">

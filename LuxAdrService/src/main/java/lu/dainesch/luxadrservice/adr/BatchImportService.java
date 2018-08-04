@@ -22,6 +22,7 @@ import javax.inject.Inject;
 import lu.dainesch.luxadrservice.adr.handler.BuildingHandler;
 import lu.dainesch.luxadrservice.adr.handler.CantonHandler;
 import lu.dainesch.luxadrservice.adr.handler.CommuneHandler;
+import lu.dainesch.luxadrservice.adr.handler.CoordinatesHandler;
 import lu.dainesch.luxadrservice.adr.handler.DistrictHandler;
 import lu.dainesch.luxadrservice.adr.handler.ImportedEntityHandler;
 import lu.dainesch.luxadrservice.adr.handler.LocalityHandler;
@@ -33,6 +34,7 @@ import lu.dainesch.luxadrservice.base.ImportException;
 import lu.dainesch.luxadrservice.base.ImportHandler;
 import lu.dainesch.luxadrservice.base.ImportStep;
 import lu.dainesch.luxadrservice.input.FixedParser;
+import lu.dainesch.luxadrservice.input.GeoParser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -61,6 +63,8 @@ public class BatchImportService {
     private CantonHandler cantHand;
     @Inject
     private BuildingHandler buildHand;
+    @Inject
+    private CoordinatesHandler coordHand;
 
     public void updateAll(InputStream in) throws ImportException {
 
@@ -231,6 +235,49 @@ public class BatchImportService {
                 return streetHand;
             default:
                 throw new ImportException("Unable to resolvew handler for step " + step);
+        }
+    }
+
+    public void importGeodata(InputStream in) throws ImportException {
+        try (GeoParser parser = new GeoParser(in)) {
+            if (!parser.hasNext()) {
+                LOG.warn("Empty file given as input, aborting");
+                return;
+            }
+
+            List<Future<Boolean>> results = new ArrayList<>();
+            int count = 0;
+
+            int sub = 0;
+            while (parser.hasNext()) {
+
+                Future<Boolean> res = coordHand.importCoords(parser.next());
+                results.add(res);
+
+                sub++;
+                if (sub % BATCH_SIZE == 0) {
+                    LOG.info("Submitted " + count + " coordinates");
+                    for (Future<Boolean> r : results) {
+                        if (r.get()) {
+                            count++;
+                        }
+                    }
+                    results.clear();
+                    LOG.info("Imported " + count + " coordinates");
+                }
+            }
+
+            // postprocess remaining
+            for (Future<Boolean> r : results) {
+                if (r.get()) {
+                    count++;
+                }
+            }
+
+            LOG.info("Imported " + count + " coordinates ");
+
+        } catch (InterruptedException | ExecutionException ex) {
+            throw new ImportException("Error during coordinates import", ex);
         }
     }
 

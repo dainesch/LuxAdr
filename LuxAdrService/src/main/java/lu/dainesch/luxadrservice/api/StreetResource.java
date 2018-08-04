@@ -1,5 +1,6 @@
 package lu.dainesch.luxadrservice.api;
 
+import lu.dainesch.luxadrservice.api.dto.SearchRequest;
 import java.util.List;
 import javax.inject.Inject;
 import javax.json.Json;

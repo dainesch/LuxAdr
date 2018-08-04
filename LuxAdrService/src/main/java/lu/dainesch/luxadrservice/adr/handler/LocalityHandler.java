@@ -12,7 +12,7 @@ import lu.dainesch.luxadrservice.adr.entity.AlternateName;
 import lu.dainesch.luxadrservice.adr.entity.Locality;
 import lu.dainesch.luxadrservice.adr.entity.PostalCode;
 import lu.dainesch.luxadrservice.adr.entity.Street;
-import lu.dainesch.luxadrservice.api.SearchRequest;
+import lu.dainesch.luxadrservice.api.dto.SearchRequest;
 import lu.dainesch.luxadrservice.base.Import;
 import lu.dainesch.luxadrservice.input.FixedParser;
 
