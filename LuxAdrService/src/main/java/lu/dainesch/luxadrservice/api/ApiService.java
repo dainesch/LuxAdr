@@ -2,6 +2,7 @@ package lu.dainesch.luxadrservice.api;
 
 import lu.dainesch.luxadrservice.api.dto.SearchRequest;
 import javax.enterprise.context.ApplicationScoped;
+import javax.inject.Inject;
 import javax.json.Json;
 import javax.json.JsonArray;
 import javax.json.JsonArrayBuilder;
@@ -9,20 +10,28 @@ import javax.json.JsonObject;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
 import lu.dainesch.luxadrservice.api.dto.GeoRequest;
+import lu.dainesch.luxadrservice.base.Config;
+import lu.dainesch.luxadrservice.base.ConfigType;
+import lu.dainesch.luxadrservice.base.ConfigValue;
 
 @ApplicationScoped
 public class ApiService {
 
     public static final JsonArray EMPTY_ARR = Json.createArrayBuilder().build();
-    private static final int MAX_SEARCH_RES = 20;
-    private static final float MAX_DIST_KM = 0.2f;
+
+    @Inject
+    @Config(ConfigType.MAX_SEARCH_RES)
+    private ConfigValue maxSearchResults;
+    @Inject
+    @Config(ConfigType.MAX_SEARCH_RES)
+    private ConfigValue maxDistKM;
 
     public boolean validateAndFix(SearchRequest req, boolean beginning) throws WebApplicationException {
         if (req == null || req.getValue() == null) {
             throw new WebApplicationException("Missing request body", Response.Status.BAD_REQUEST);
         }
-        if (req.getMaxResults() > MAX_SEARCH_RES || req.getMaxResults() <= 0) {
-            req.setMaxResults(MAX_SEARCH_RES);
+        if (req.getMaxResults() > maxSearchResults.getInt() || req.getMaxResults() <= 0) {
+            req.setMaxResults(maxSearchResults.getInt());
         }
         if (req.isBeginning() == null) {
             req.setBeginning(beginning);
@@ -37,8 +46,8 @@ public class ApiService {
         if (req == null) {
             throw new WebApplicationException("Missing request body", Response.Status.BAD_REQUEST);
         }
-        if (req.getDistance()> MAX_DIST_KM || req.getDistance() <= 0) {
-            req.setDistance(MAX_DIST_KM);
+        if (req.getDistance() > maxDistKM.getFloat() || req.getDistance() <= 0) {
+            req.setDistance(maxDistKM.getFloat());
         }
 
         return true;

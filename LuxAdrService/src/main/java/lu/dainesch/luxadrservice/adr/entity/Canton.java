@@ -9,7 +9,6 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.Index;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
@@ -20,9 +19,7 @@ import javax.persistence.TableGenerator;
 import lu.dainesch.luxadrservice.base.ImportedEntity;
 
 @Entity
-@Table(name = "CANTON", indexes = {
-    @Index(name = "IDX_CANTON_CODE", columnList = "CODE")
-})
+@Table(name = "CANTON")
 @Cacheable
 @NamedQueries({
     @NamedQuery(name = "canton.invalidate", query = "UPDATE Canton SET active = false, until = :imp where current != :imp")

@@ -11,7 +11,6 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.Index;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
@@ -20,9 +19,7 @@ import javax.persistence.Table;
 import javax.persistence.TableGenerator;
 
 @Entity
-@Table(name = "ALT_NAME", indexes = {
-    @Index(name = "IDX_ALT_NAME", columnList = "NAME")
-})
+@Table(name = "ALT_NAME")
 @Cacheable
 @NamedQueries({
     @NamedQuery(name = "alternatename.del.loc", query = "DELETE FROM AlternateName WHERE localiity != null")

@@ -29,6 +29,9 @@ import lu.dainesch.luxadrservice.adr.handler.LocalityHandler;
 import lu.dainesch.luxadrservice.adr.handler.PostCodeHandler;
 import lu.dainesch.luxadrservice.adr.handler.QuarterHandler;
 import lu.dainesch.luxadrservice.adr.handler.StreetHandler;
+import lu.dainesch.luxadrservice.base.Config;
+import lu.dainesch.luxadrservice.base.ConfigType;
+import lu.dainesch.luxadrservice.base.ConfigValue;
 import lu.dainesch.luxadrservice.base.Import;
 import lu.dainesch.luxadrservice.base.ImportException;
 import lu.dainesch.luxadrservice.base.ImportHandler;
@@ -43,7 +46,12 @@ import org.slf4j.LoggerFactory;
 public class BatchImportService {
 
     private static final Logger LOG = LoggerFactory.getLogger(StreetHandler.class);
-    private static final int BATCH_SIZE = 1000;
+
+    private static final int EXPECTED_FILES = 11;
+
+    @Inject
+    @Config(ConfigType.BATCH_SIZE)
+    private ConfigValue batchSize;
 
     @Inject
     private ImportHandler impHand;
@@ -97,7 +105,7 @@ public class BatchImportService {
                 throw new ImportException("Error during step temp file creation", ex);
             }
 
-            if (fileMap.size() != ImportStep.values().length) {
+            if (fileMap.size() != EXPECTED_FILES) {
                 throw new ImportException("Zip does not contain required files");
             }
 
@@ -108,6 +116,9 @@ public class BatchImportService {
             Import currentImport = impHand.createNewImport();
 
             for (ImportStep step : steps) {
+                if (step == ImportStep.GEODATA) {
+                    continue;
+                }
                 try (InputStream stepIn = Files.newInputStream(fileMap.get(step))) {
 
                     update(currentImport, step, stepIn);
@@ -152,6 +163,7 @@ public class BatchImportService {
         try (FixedParser parser = new FixedParser(in, format)) {
             if (!parser.hasNext()) {
                 LOG.warn("Empty file given as input, aborting");
+                impHand.log(currentImport, step, "Empty file given as input, aborting");
                 return;
             }
             int deleted = 0;
@@ -174,8 +186,9 @@ public class BatchImportService {
                 results.add(res);
 
                 sub++;
-                if (sub % BATCH_SIZE == 0) {
+                if (sub % batchSize.getInt() == 0) {
                     LOG.info("Submitted " + count + " " + step.getStepName());
+                    impHand.log(currentImport, step, "Submitted " + count + " " + step.getStepName());
                     for (Future<Boolean> r : results) {
                         if (r.get()) {
                             count++;
@@ -183,6 +196,7 @@ public class BatchImportService {
                     }
                     results.clear();
                     LOG.info("Imported " + count + " " + step.getStepName());
+                    impHand.log(currentImport, step, "Imported " + count + " " + step.getStepName());
                 }
             }
 
@@ -197,8 +211,8 @@ public class BatchImportService {
                 deleted = objHand.postprocess(currentImport);
             }
 
-            LOG.info("Imported " + count + " " + step.getStepName() + " and deleted " + deleted);
-            impHand.log(currentImport, step, "Imported " + count + " " + step.getStepName() + " and deleted " + deleted);
+            LOG.info("Done! Imported " + count + " " + step.getStepName() + " and deleted " + deleted);
+            impHand.log(currentImport, step, "Done! Imported " + count + " " + step.getStepName() + " and deleted " + deleted);
 
             if (!grouped) {
                 impHand.complete(currentImport);
@@ -239,8 +253,14 @@ public class BatchImportService {
     }
 
     public void importGeodata(InputStream in) throws ImportException {
+
+        Import currentImport = impHand.createNewImport();
+
+        impHand.log(currentImport, ImportStep.GEODATA, "Starting step " + ImportStep.GEODATA.getStepName());
+
         try (GeoParser parser = new GeoParser(in)) {
             if (!parser.hasNext()) {
+                impHand.log(currentImport, ImportStep.GEODATA, "Empty file given as input, aborting");
                 LOG.warn("Empty file given as input, aborting");
                 return;
             }
@@ -255,8 +275,9 @@ public class BatchImportService {
                 results.add(res);
 
                 sub++;
-                if (sub % BATCH_SIZE == 0) {
+                if (sub % batchSize.getInt() == 0) {
                     LOG.info("Submitted " + count + " coordinates");
+                    impHand.log(currentImport, ImportStep.GEODATA, "Submitted " + count + " coordinates");
                     for (Future<Boolean> r : results) {
                         if (r.get()) {
                             count++;
@@ -264,6 +285,7 @@ public class BatchImportService {
                     }
                     results.clear();
                     LOG.info("Imported " + count + " coordinates");
+                    impHand.log(currentImport, ImportStep.GEODATA, "Imported " + count + " coordinates");
                 }
             }
 
@@ -274,9 +296,12 @@ public class BatchImportService {
                 }
             }
 
-            LOG.info("Imported " + count + " coordinates ");
+            LOG.info("Done! Imported " + count + " coordinates ");
+            impHand.log(currentImport, ImportStep.GEODATA, "Done! Imported " + count + " coordinates ");
 
         } catch (InterruptedException | ExecutionException ex) {
+            impHand.log(currentImport, ImportStep.GEODATA, "Error during step " + ImportStep.GEODATA.getStepName() + ": view log for more info");
+            impHand.error(currentImport);
             throw new ImportException("Error during coordinates import", ex);
         }
     }

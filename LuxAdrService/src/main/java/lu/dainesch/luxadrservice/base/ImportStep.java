@@ -13,7 +13,9 @@ public enum ImportStep {
     STREET(8, "RUE", "street", false),
     STREET_ALT(9, "ALIAS.RUE", "street name", true),
     BUILDING(10, "IMMEUBLE", "building", false),
-    BUILDING_DES(11, "IMMDESIG", "building name", true);
+    BUILDING_DES(11, "IMMDESIG", "building name", true),
+    //
+    GEODATA(12, "addresses.geojson", "geodata", false);
 
     private final int order;
     private final String file;
@@ -42,8 +44,6 @@ public enum ImportStep {
     public boolean isAlt() {
         return alt;
     }
-    
-    
 
     public static Comparator<ImportStep> comparator() {
         return (o1, o2) -> o1.order - o2.order;
