@@ -12,12 +12,26 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 import javax.persistence.TableGenerator;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
 
 @Entity
+@XmlRootElement
+@XmlAccessorType(XmlAccessType.FIELD)
+@NamedQueries({
+    @NamedQuery(name = "importlog.by.imp",
+            query = "Select l from ImportLog l "
+            + "where l.imp = :imp "
+            + "order by l.created desc")
+})
 @Table(name = "IMPORT_LOG")
 public class ImportLog implements Serializable {
 
@@ -38,6 +52,7 @@ public class ImportLog implements Serializable {
     private ImportStep step;
 
     @ManyToOne
+    @XmlTransient
     @JoinColumn(name = "IMP_ID", nullable = false)
     private Import imp;
 

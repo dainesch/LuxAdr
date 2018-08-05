@@ -2,6 +2,7 @@ package lu.dainesch.luxadrservice.api;
 
 import lu.dainesch.luxadrservice.api.dto.SearchRequest;
 import javax.enterprise.context.ApplicationScoped;
+import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.json.Json;
 import javax.json.JsonArray;
@@ -14,7 +15,7 @@ import lu.dainesch.luxadrservice.base.Config;
 import lu.dainesch.luxadrservice.base.ConfigType;
 import lu.dainesch.luxadrservice.base.ConfigValue;
 
-@ApplicationScoped
+@RequestScoped
 public class ApiService {
 
     public static final JsonArray EMPTY_ARR = Json.createArrayBuilder().build();

@@ -14,12 +14,20 @@ import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 import javax.persistence.TableGenerator;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
 
 @Entity
 @Cacheable
 @NamedQueries({
     @NamedQuery(name = "cfg.by.type", query = "Select c from ConfigValue c where c.type = :type")
+    ,
+    @NamedQuery(name = "cfg.all", query = "Select c from ConfigValue c order by c.type")
 })
+@XmlRootElement
+@XmlAccessorType(XmlAccessType.FIELD)
 @Table(name = "CONFIG_VALUE")
 public class ConfigValue implements Serializable {
 
@@ -27,6 +35,7 @@ public class ConfigValue implements Serializable {
     @GeneratedValue(strategy = GenerationType.TABLE, generator = "ConfigValue")
     @TableGenerator(name = "ConfigValue")
     @Column(name = "CFG_ID")
+    @XmlTransient
     private Long id;
 
     @Column(name = "CFG_KEY", nullable = false, unique = true)
@@ -77,7 +86,7 @@ public class ConfigValue implements Serializable {
         try {
             return Integer.parseInt(value);
         } catch (NumberFormatException ex) {
-            return null;
+            return Integer.parseInt(type.getDefaultValue());
         }
     }
 
@@ -89,7 +98,7 @@ public class ConfigValue implements Serializable {
         try {
             return Float.parseFloat(value);
         } catch (NumberFormatException ex) {
-            return null;
+            return Float.parseFloat(type.getDefaultValue());
         }
     }
 

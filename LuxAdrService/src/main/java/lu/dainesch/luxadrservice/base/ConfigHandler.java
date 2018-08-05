@@ -1,5 +1,6 @@
 package lu.dainesch.luxadrservice.base;
 
+import java.util.List;
 import javax.ejb.Stateless;
 import javax.enterprise.inject.Produces;
 import javax.enterprise.inject.spi.InjectionPoint;
@@ -30,6 +31,10 @@ public class ConfigHandler {
         } catch (NoResultException ex) {
             return null;
         }
+    }
+    
+    public List<ConfigValue> getAll() {
+        return em.createNamedQuery("cfg.all", ConfigValue.class).getResultList();
     }
 
     public void save(ConfigValue val) {

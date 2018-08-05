@@ -11,6 +11,8 @@ import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.TableGenerator;
@@ -18,6 +20,11 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
 @Entity
+@NamedQueries({
+    @NamedQuery(name = "import.latest",
+            query = "Select i from Import i "
+            + "where i.start = (Select MAX(i2.start) from Import i2)")
+})
 @Table(name = "IMPORT")
 public class Import implements Serializable {
 
