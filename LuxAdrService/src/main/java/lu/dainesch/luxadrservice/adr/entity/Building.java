@@ -40,6 +40,14 @@ import lu.dainesch.luxadrservice.base.ImportedEntity;
             + "and c.latitude < :maxLat AND c.longitude < :maxLon "
             // aproximate distance
             + "order by ABS(c.latitude - :lat) * ABS(c.latitude - :lat) + ABS(c.longitude - :lon) * ABS(c.longitude - :lon) * :cos asc")
+    ,
+    @NamedQuery(name = "building.all.active.type",
+            query = "Select b from Building b "
+            + "join b.postalCode pc "
+            + "join b.street st "
+            + "join st.locality loc "
+            + "where b.active = true and pc.type = :type "
+            + "order by b.number")
 })
 public class Building extends ImportedEntity {
 

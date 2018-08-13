@@ -2,6 +2,8 @@ package lu.dainesch.luxadrservice.admin;
 
 import java.util.List;
 import javax.inject.Inject;
+import javax.json.Json;
+import javax.json.JsonObject;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -23,15 +25,19 @@ public class ConfigResource {
     public List<ConfigValue> getConfig() {
         return confHand.getAll();
     }
-    
+
     @POST
-    public void saveConfig(List<ConfigValue> values) {
-        
-        for (ConfigValue v:values) {
+    public JsonObject saveConfig(List<ConfigValue> values) {
+
+        for (ConfigValue v : values) {
             ConfigValue exist = confHand.getValue(v.getType());
             exist.setValue(v.getValue());
             confHand.save(exist);
         }
+
+        return Json.createObjectBuilder()
+                .add("info", "Config values saved")
+                .build();
     }
 
 }

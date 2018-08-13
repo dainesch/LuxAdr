@@ -27,6 +27,19 @@ public class ApiService {
     @Config(ConfigType.MAX_SEARCH_RES)
     private ConfigValue maxDistKM;
 
+    public boolean validateAndFix(SearchRequest req) throws WebApplicationException {
+        if (req == null || req.getValue() == null) {
+            throw new WebApplicationException("Missing request body", Response.Status.BAD_REQUEST);
+        }
+        if (req.getMaxResults() > maxSearchResults.getInt() || req.getMaxResults() <= 0) {
+            req.setMaxResults(maxSearchResults.getInt());
+        }
+        req.setValue(req.getValue().trim());
+
+        return req.isValid();
+
+    }
+
     public boolean validateAndFix(SearchRequest req, boolean beginning) throws WebApplicationException {
         if (req == null || req.getValue() == null) {
             throw new WebApplicationException("Missing request body", Response.Status.BAD_REQUEST);

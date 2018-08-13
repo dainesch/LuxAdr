@@ -1,5 +1,8 @@
 package lu.dainesch.luxadrservice.base;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.List;
 import javax.ejb.Stateless;
 import javax.enterprise.inject.Produces;
@@ -7,9 +10,13 @@ import javax.enterprise.inject.spi.InjectionPoint;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Stateless
 public class ConfigHandler {
+
+    private static final Logger LOG = LoggerFactory.getLogger(ConfigHandler.class);
 
     @PersistenceContext
     private EntityManager em;
@@ -17,8 +24,17 @@ public class ConfigHandler {
     public void initConfig() {
         // save default values
         for (ConfigType t : ConfigType.values()) {
-            if (t != ConfigType.NONE && getValue(t) == null) {
+            if (t.isAutocreate() && getValue(t) == null) {
                 em.persist(new ConfigValue(t, t.getDefaultValue()));
+            }
+        }
+
+        if (getValue(ConfigType.LUCENE_DATA_DIR) == null) {
+            try {
+                Path temp = Files.createTempDirectory("LuxAdrLuceneData");
+                em.persist(new ConfigValue(ConfigType.LUCENE_DATA_DIR, temp.toString()));
+            } catch (IOException ex) {
+                LOG.error("Error creating lucence temp dir", ex);
             }
         }
     }
@@ -32,7 +48,7 @@ public class ConfigHandler {
             return null;
         }
     }
-    
+
     public List<ConfigValue> getAll() {
         return em.createNamedQuery("cfg.all", ConfigValue.class).getResultList();
     }

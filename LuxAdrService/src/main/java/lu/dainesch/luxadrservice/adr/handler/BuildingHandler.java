@@ -16,6 +16,8 @@ import javax.persistence.NoResultException;
 import lu.dainesch.luxadrservice.GeoUtil;
 import lu.dainesch.luxadrservice.adr.entity.Building;
 import lu.dainesch.luxadrservice.adr.entity.HouseNumber;
+import lu.dainesch.luxadrservice.adr.entity.PostCodeType;
+import lu.dainesch.luxadrservice.adr.entity.PostalCode;
 import lu.dainesch.luxadrservice.base.Import;
 import lu.dainesch.luxadrservice.input.FixedParser;
 import org.slf4j.Logger;
@@ -97,6 +99,14 @@ public class BuildingHandler extends ImportedEntityHandler<Building> {
                 .getResultList();
         return ret;
 
+    }
+
+    public List<Building> getBuildingsPaginated(int start, int count, PostCodeType type) {
+        return em.createNamedQuery("building.all.active.type", Building.class)
+                .setParameter("type", type)
+                .setFirstResult(start)
+                .setMaxResults(count)
+                .getResultList();
     }
 
     public Building createOrUpdate(Building bui, Import imp) {
