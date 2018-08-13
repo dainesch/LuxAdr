@@ -40,7 +40,7 @@ public class SearchResource {
             Set<AdrSearchEntry> results = search.search(req.getValue(), req.getMaxResults());
             JsonArrayBuilder ret = Json.createArrayBuilder();
             results.forEach((adr) -> {
-                ret.add(Json.createObjectBuilder().add("id", adr.getId()).add("result", adr.getAddress()));
+                ret.add(Json.createObjectBuilder().add("buildingId", adr.getId()).add("result", adr.getAddress()));
             });
             return Response.ok(as.wrapSearchResult(req, ret)).build();
 

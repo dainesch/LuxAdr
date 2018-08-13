@@ -22,6 +22,7 @@ import lu.dainesch.luxadrservice.base.ConfigType;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.fr.FrenchAnalyzer;
 import org.apache.lucene.document.Document;
+import org.apache.lucene.document.LatLonPoint;
 import org.apache.lucene.index.DirectoryReader;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
@@ -87,9 +88,9 @@ public class LuceneSingleton {
             shutDown();
             Path path = Paths.get(confHand.getValue(ConfigType.LUCENE_DATA_DIR).getValue());
             Files.walk(path)
-                .map(Path::toFile)
-                .sorted((o1, o2) -> -o1.compareTo(o2))
-                .forEach(File::delete);
+                    .map(Path::toFile)
+                    .sorted((o1, o2) -> -o1.compareTo(o2))
+                    .forEach(File::delete);
             Files.createDirectories(path);
             init();
         } catch (IOException ex) {
@@ -160,6 +161,57 @@ public class LuceneSingleton {
 
     }
 
+    public Set<AdrSearchEntry> getBuildingsInDistance(float latitude, float longitude, float distMeter, int maxResults) throws SearchException {
+        LinkedHashSet<AdrSearchEntry> ret = new LinkedHashSet<>();
+        if (!isEnabled()) {
+            return ret;
+        }
+
+        try {
+            IndexReader read = getReader();
+
+            IndexSearcher searcher = new IndexSearcher(read);
+
+            TopDocs results = searcher.search(LatLonPoint.newDistanceQuery(AdrSearchEntry.POS, latitude, longitude, distMeter), maxResults);
+            ScoreDoc[] hits = results.scoreDocs;
+
+            for (ScoreDoc sd : hits) {
+                Document doc = searcher.doc(sd.doc);
+                AdrSearchEntry res = new AdrSearchEntry(doc);
+                if (!ret.contains(res)) {
+                    ret.add(res);
+                }
+            }
+            return ret;
+        } catch (IOException ex) {
+            throw new SearchException("Error searching data", ex);
+        }
+
+    }
+
+    public AdrSearchEntry getNearest(float latitude, float longitude) throws SearchException {
+        if (!isEnabled()) {
+            return null;
+        }
+        try {
+            IndexReader read = getReader();
+
+            IndexSearcher searcher = new IndexSearcher(read);
+
+            TopDocs results = LatLonPoint.nearest(searcher, AdrSearchEntry.POS, latitude, longitude, 1);
+            ScoreDoc[] hits = results.scoreDocs;
+
+            for (ScoreDoc sd : hits) {
+                Document doc = searcher.doc(sd.doc);
+                return new AdrSearchEntry(doc);
+
+            }
+            return null;
+        } catch (IOException ex) {
+            throw new SearchException("Error searching data", ex);
+        }
+    }
+
     private synchronized IndexReader getReader() throws IOException {
         if (reader == null) {
             reader = DirectoryReader.open(directory);
@@ -169,6 +221,13 @@ public class LuceneSingleton {
 
     public synchronized boolean isEnabled() {
         return enabled;
+    }
+
+    public boolean hasData() throws IOException {
+        if (!isEnabled()) {
+            return false;
+        }
+        return getReader().numDocs() > 0;
     }
 
     @PreDestroy

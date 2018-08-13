@@ -13,7 +13,8 @@ public enum ConfigType {
     MAX_DIST_KM("0.2", true),
     //
     LUCENE_ENABLED("true", true),
-    LUCENE_DATA_DIR("", false);
+    LUCENE_DATA_DIR("", false),
+    LUCENE_GEO_SEARCH("true", true);
 
     private final String defaultValue;
     private final boolean autocreate;

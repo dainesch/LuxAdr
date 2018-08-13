@@ -33,6 +33,8 @@ import lu.dainesch.luxadrservice.base.ImportedEntity;
     ,
     @NamedQuery(name = "building.by.nums", query = "SELECT b from Building b where b.number IN :nums")
     ,
+    @NamedQuery(name = "building.by.ids", query = "SELECT b from Building b where b.id IN :ids and b.active=true")
+    ,
     @NamedQuery(name = "building.geo.rect",
             query = "SELECT b from Building b "
             + "JOIN b.coordinates c "

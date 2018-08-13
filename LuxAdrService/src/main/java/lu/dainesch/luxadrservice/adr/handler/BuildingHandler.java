@@ -17,7 +17,6 @@ import lu.dainesch.luxadrservice.GeoUtil;
 import lu.dainesch.luxadrservice.adr.entity.Building;
 import lu.dainesch.luxadrservice.adr.entity.HouseNumber;
 import lu.dainesch.luxadrservice.adr.entity.PostCodeType;
-import lu.dainesch.luxadrservice.adr.entity.PostalCode;
 import lu.dainesch.luxadrservice.base.Import;
 import lu.dainesch.luxadrservice.input.FixedParser;
 import org.slf4j.Logger;
@@ -85,7 +84,7 @@ public class BuildingHandler extends ImportedEntityHandler<Building> {
     }
 
     public List<Building> getInRange(float lat, float lon, float distance) {
-
+        
         Rectangle2D.Float r = GeoUtil.getBoundingBox(lat, lon, distance);
 
         List<Building> ret = em.createNamedQuery("building.geo.rect", Building.class)
@@ -107,6 +106,13 @@ public class BuildingHandler extends ImportedEntityHandler<Building> {
                 .setFirstResult(start)
                 .setMaxResults(count)
                 .getResultList();
+    }
+
+    public List<Building> getBuildingsRangeByIds(List<Long> ids) {
+        return em.createNamedQuery("building.by.ids", Building.class)
+                .setParameter("ids", ids)
+                .getResultList();
+
     }
 
     public Building createOrUpdate(Building bui, Import imp) {

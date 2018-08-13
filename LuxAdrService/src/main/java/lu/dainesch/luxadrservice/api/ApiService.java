@@ -26,6 +26,9 @@ public class ApiService {
     @Inject
     @Config(ConfigType.MAX_SEARCH_RES)
     private ConfigValue maxDistKM;
+    @Inject
+    @Config(ConfigType.LUCENE_GEO_SEARCH)
+    private ConfigValue useLuceneGeoSearch;
 
     public boolean validateAndFix(SearchRequest req) throws WebApplicationException {
         if (req == null || req.getValue() == null) {
@@ -62,6 +65,9 @@ public class ApiService {
         }
         if (req.getDistance() > maxDistKM.getFloat() || req.getDistance() <= 0) {
             req.setDistance(maxDistKM.getFloat());
+        }
+        if (req.getLucene() == null) {
+            req.setLucene(useLuceneGeoSearch.getBoolean());
         }
 
         return true;

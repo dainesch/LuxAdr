@@ -8,6 +8,7 @@ public class GeoRequest {
     private float latitude;
     private float longitude;
     private float distance;
+    private Boolean lucene;
 
     public float getLatitude() {
         return latitude;
@@ -31,6 +32,14 @@ public class GeoRequest {
 
     public void setDistance(float distance) {
         this.distance = distance;
+    }
+
+    public Boolean getLucene() {
+        return lucene;
+    }
+
+    public void setLucene(Boolean lucene) {
+        this.lucene = lucene;
     }
 
 }

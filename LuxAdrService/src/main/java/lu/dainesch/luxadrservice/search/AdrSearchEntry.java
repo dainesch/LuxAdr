@@ -25,6 +25,8 @@ import org.apache.lucene.search.TermQuery;
 
 public class AdrSearchEntry implements Serializable {
 
+    public static final String POS = "pos";
+    
     private static final SearchType TYPE = SearchType.ADDRESS;
     private static final String ID = "id";
     private static final String T = "type";
@@ -32,6 +34,7 @@ public class AdrSearchEntry implements Serializable {
     private static final String PC = "postalCode";
     private static final String NUM = "number";
     private static final String ALL = "all";
+    
 
     private final Long id;
     private final String address;
@@ -82,7 +85,7 @@ public class AdrSearchEntry implements Serializable {
         doc.add(new TextField(ALL, all.toString(), Field.Store.NO));
 
         if (building.getCoordinates() != null) {
-            doc.add(new LatLonPoint("pos", building.getCoordinates().getLatitude(), building.getCoordinates().getLongitude()));
+            doc.add(new LatLonPoint(POS, building.getCoordinates().getLatitude(), building.getCoordinates().getLongitude()));
 
         }
 
@@ -94,7 +97,7 @@ public class AdrSearchEntry implements Serializable {
         StringTokenizer tok = new StringTokenizer(search, ", ");
 
         // filter by type
-        b.add(new TermQuery(new Term("type", TYPE.toString())), BooleanClause.Occur.MUST);
+        b.add(new TermQuery(new Term(T, TYPE.toString())), BooleanClause.Occur.MUST);
 
         String num = AddressFormater.extractNumber(search);
         String pc = AddressFormater.extractPostcode(search);
@@ -112,7 +115,7 @@ public class AdrSearchEntry implements Serializable {
 
         return b.build();
     }
-
+    
     Term getTerm() {
         return new Term("id", String.valueOf(id));
     }
