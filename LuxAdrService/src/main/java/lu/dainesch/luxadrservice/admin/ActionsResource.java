@@ -1,5 +1,6 @@
 package lu.dainesch.luxadrservice.admin;
 
+import java.util.logging.Level;
 import javax.inject.Inject;
 import javax.json.Json;
 import javax.json.JsonObject;
@@ -10,6 +11,9 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import lu.dainesch.luxadrservice.adr.BatchImportService;
+import lu.dainesch.luxadrservice.base.ConfigHandler;
+import lu.dainesch.luxadrservice.base.ImportException;
 import lu.dainesch.luxadrservice.search.SearchException;
 import lu.dainesch.luxadrservice.search.SearchService;
 import org.slf4j.Logger;
@@ -24,6 +28,8 @@ public class ActionsResource {
 
     @Inject
     private SearchService search;
+    @Inject
+    private BatchImportService importServ;
 
     @Path("index")
     @POST
@@ -50,6 +56,34 @@ public class ActionsResource {
         }
         return Json.createObjectBuilder()
                 .add("info", "Wiping done")
+                .build();
+    }
+
+    @Path("importAddr")
+    @POST
+    public JsonObject importAddressData() {
+        try {
+            importServ.importAdrRemote();
+        } catch (ImportException ex) {
+            LOG.error("Error importing address data", ex);
+            throw new WebApplicationException("Error while importing address data", Response.Status.INTERNAL_SERVER_ERROR);
+        }
+        return Json.createObjectBuilder()
+                .add("info", "Address import done")
+                .build();
+    }
+
+    @Path("importGeo")
+    @POST
+    public JsonObject importGeoData() {
+        try {
+            importServ.importGeoRemote();
+        } catch (ImportException ex) {
+            LOG.error("Error importing geo data", ex);
+            throw new WebApplicationException("Error while importing geo data", Response.Status.INTERNAL_SERVER_ERROR);
+        }
+        return Json.createObjectBuilder()
+                .add("info", "Geo import done")
                 .build();
     }
 

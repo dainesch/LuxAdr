@@ -14,7 +14,10 @@ public enum ConfigType {
     //
     LUCENE_ENABLED("true", true),
     LUCENE_DATA_DIR("", false),
-    LUCENE_GEO_SEARCH("true", true);
+    LUCENE_GEO_SEARCH("true", true),
+    //
+    DATA_PUBLIC_ADR_URL("https://data.public.lu/fr/datasets/r/af76a119-2bd1-462c-a5bf-23e11ccfd3ee",true),
+    DATA_PUBLIC_GEO_URL("https://data.public.lu/fr/datasets/r/7b58cf20-cbb0-4970-83f7-53a277f691b8", true);
 
     private final String defaultValue;
     private final boolean autocreate;

@@ -19,6 +19,8 @@ import javax.ejb.Stateless;
 import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
 import javax.inject.Inject;
+import javax.ws.rs.client.Client;
+import javax.ws.rs.client.ClientBuilder;
 import lu.dainesch.luxadrservice.adr.handler.BuildingHandler;
 import lu.dainesch.luxadrservice.adr.handler.CantonHandler;
 import lu.dainesch.luxadrservice.adr.handler.CommuneHandler;
@@ -30,6 +32,7 @@ import lu.dainesch.luxadrservice.adr.handler.PostCodeHandler;
 import lu.dainesch.luxadrservice.adr.handler.QuarterHandler;
 import lu.dainesch.luxadrservice.adr.handler.StreetHandler;
 import lu.dainesch.luxadrservice.base.Config;
+import lu.dainesch.luxadrservice.base.ConfigHandler;
 import lu.dainesch.luxadrservice.base.ConfigType;
 import lu.dainesch.luxadrservice.base.ConfigValue;
 import lu.dainesch.luxadrservice.base.Import;
@@ -73,6 +76,62 @@ public class BatchImportService {
     private BuildingHandler buildHand;
     @Inject
     private CoordinatesHandler coordHand;
+    @Inject
+    private ConfigHandler confHand;
+
+    public void importAdrRemote() throws ImportException {
+        ConfigValue url = confHand.getValue(ConfigType.DATA_PUBLIC_ADR_URL);
+
+        Path tmpFile = null;
+        try {
+
+            tmpFile = Files.createTempFile("CACLR", ".zip");
+
+            Client cl = ClientBuilder.newClient();
+
+            try (InputStream in = cl.target(url.getValue()).request().get().readEntity(InputStream.class)) {
+                updateAll(in);
+            }
+
+        } catch (IOException ex) {
+            throw new ImportException("Error retrieving file remote url " + url.getValue(), ex);
+        } finally {
+            try {
+                if (tmpFile != null) {
+                    Files.deleteIfExists(tmpFile);
+                }
+            } catch (IOException ex) {
+                LOG.error("Error cleaning up file " + tmpFile, ex);
+            }
+        }
+    }
+
+    public void importGeoRemote() throws ImportException {
+        ConfigValue url = confHand.getValue(ConfigType.DATA_PUBLIC_GEO_URL);
+
+        Path tmpFile = null;
+        try {
+
+            tmpFile = Files.createTempFile("addresses", ".geojson");
+
+            Client cl = ClientBuilder.newClient();
+
+            try (InputStream in = cl.target(url.getValue()).request().get().readEntity(InputStream.class)) {
+                importGeodata(in);
+            }
+
+        } catch (IOException ex) {
+            throw new ImportException("Error retrieving file remote url " + url.getValue(), ex);
+        } finally {
+            try {
+                if (tmpFile != null) {
+                    Files.deleteIfExists(tmpFile);
+                }
+            } catch (IOException ex) {
+                LOG.error("Error cleaning up file " + tmpFile, ex);
+            }
+        }
+    }
 
     public void updateAll(InputStream in) throws ImportException {
 

@@ -31,6 +31,9 @@ public class SearchService {
     }
 
     public void indexData() throws SearchException {
+        // first wipe
+        lucene.wipeData();
+        
         int count = 0;
 
         List<Building> buildings = buildHand.getBuildingsPaginated(count, BATCH_SIZE, PostCodeType.Normal);
