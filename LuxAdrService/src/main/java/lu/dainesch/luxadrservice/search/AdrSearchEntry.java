@@ -2,6 +2,7 @@ package lu.dainesch.luxadrservice.search;
 
 import java.io.Serializable;
 import java.util.StringTokenizer;
+import lu.dainesch.luxadrdto.AdrSearchResult;
 import lu.dainesch.luxadrservice.adr.AddressFormater;
 import lu.dainesch.luxadrservice.adr.entity.Building;
 import lu.dainesch.luxadrservice.adr.entity.HouseNumber;
@@ -128,4 +129,7 @@ public class AdrSearchEntry implements Serializable {
         return id;
     }
 
+    public AdrSearchResult toDTO() {
+        return new AdrSearchResult(id, address);
+    }
 }

@@ -14,6 +14,9 @@ public class GeoRequest implements Serializable {
     private float distance;
     private Boolean lucene;
 
+    public GeoRequest() {
+    }
+
     public float getLatitude() {
         return latitude;
     }

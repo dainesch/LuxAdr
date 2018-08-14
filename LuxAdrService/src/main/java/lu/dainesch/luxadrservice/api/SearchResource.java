@@ -1,9 +1,8 @@
 package lu.dainesch.luxadrservice.api;
 
 import java.util.Set;
+import java.util.stream.Collectors;
 import javax.inject.Inject;
-import javax.json.Json;
-import javax.json.JsonArrayBuilder;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -11,7 +10,9 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import lu.dainesch.luxadrdto.AdrSearchResult;
 import lu.dainesch.luxadrdto.SearchRequest;
+import lu.dainesch.luxadrdto.SearchResult;
 import lu.dainesch.luxadrservice.search.AdrSearchEntry;
 import lu.dainesch.luxadrservice.search.SearchException;
 import lu.dainesch.luxadrservice.search.SearchService;
@@ -31,18 +32,17 @@ public class SearchResource {
     private SearchService search;
 
     @POST
-    public Response search(SearchRequest req) {
+    public SearchResult<AdrSearchResult> search(SearchRequest req) {
         if (!as.validateAndFix(req)) {
-            return as.emptyArrayResponse();
+            return new SearchResult<>(req);
         }
 
         try {
             Set<AdrSearchEntry> results = search.search(req.getValue(), req.getMaxResults());
-            JsonArrayBuilder ret = Json.createArrayBuilder();
-            results.forEach((adr) -> {
-                ret.add(Json.createObjectBuilder().add("buildingId", adr.getId()).add("result", adr.getAddress()));
-            });
-            return Response.ok(as.wrapSearchResult(req, ret)).build();
+            return new SearchResult<>(
+                    req,
+                    results.stream().map(r -> r.toDTO()).collect(Collectors.toList())
+            );
 
         } catch (SearchException ex) {
             LOG.error("Error while searching for " + req.getValue());

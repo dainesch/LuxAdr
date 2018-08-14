@@ -1,12 +1,11 @@
 package lu.dainesch.luxadrservice.api;
 
 import java.io.IOException;
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 import javax.inject.Inject;
-import javax.json.Json;
-import javax.json.JsonArrayBuilder;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -18,6 +17,7 @@ import javax.ws.rs.core.Response;
 import lu.dainesch.luxadrservice.adr.entity.Building;
 import lu.dainesch.luxadrservice.adr.handler.BuildingHandler;
 import lu.dainesch.luxadrdto.GeoRequest;
+import lu.dainesch.luxadrdto.entity.BuildingDTO;
 import lu.dainesch.luxadrservice.search.AdrSearchEntry;
 import lu.dainesch.luxadrservice.search.LuceneSingleton;
 import lu.dainesch.luxadrservice.search.SearchException;
@@ -40,9 +40,9 @@ public class GeoResource {
 
     @POST
     @Path("building/all")
-    public Response getBuildingsInDistance(GeoRequest req) {
+    public List<BuildingDTO> getBuildingsInDistance(GeoRequest req) {
         if (!as.validateAndFix(req)) {
-            return as.emptyArrayResponse();
+            return Collections.EMPTY_LIST;
         }
         checkLucene(req);
 
@@ -53,7 +53,7 @@ public class GeoResource {
             try {
                 Set<AdrSearchEntry> results = lucene.getBuildingsInDistance(req.getLatitude(), req.getLongitude(), req.getDistance() * 1000, Integer.MAX_VALUE);
                 if (results.isEmpty()) {
-                    return as.emptyArrayResponse();
+                    return Collections.EMPTY_LIST;
                 }
                 List<Long> ids = results.stream().map(r -> r.getId()).collect(Collectors.toList());
                 ret = builHand.getBuildingsRangeByIds(ids);
@@ -63,21 +63,14 @@ public class GeoResource {
                 throw new WebApplicationException("Error during geo search", Response.Status.INTERNAL_SERVER_ERROR);
             }
         }
-        if (ret.isEmpty()) {
-            return as.emptyArrayResponse();
-        }
-
-        JsonArrayBuilder arr = Json.createArrayBuilder();
-        ret.forEach(b -> arr.add(b.toJson(true)));
-
-        return Response.ok(arr.build()).build();
+        return ret.stream().map(b -> b.toDTO(true)).collect(Collectors.toList());
     }
 
     @POST
     @Path("building")
-    public Response getNearestBuilding(GeoRequest req) {
+    public BuildingDTO getNearestBuilding(GeoRequest req) {
         if (!as.validateAndFix(req)) {
-            return as.emptyArrayResponse();
+            return null;
         }
         checkLucene(req);
 
@@ -98,9 +91,9 @@ public class GeoResource {
         }
 
         if (ret == null) {
-            return as.emptyArrayResponse();
+            return null;
         }
-        return Response.ok(ret.toJson(true).build()).build();
+        return ret.toDTO(true);
     }
 
     private void checkLucene(GeoRequest req) {

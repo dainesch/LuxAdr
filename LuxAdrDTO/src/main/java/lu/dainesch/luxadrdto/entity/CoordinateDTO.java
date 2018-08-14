@@ -12,6 +12,9 @@ public class CoordinateDTO implements Serializable {
     private float latitude;
     private float longitude;
 
+    public CoordinateDTO() {
+    }
+
     public CoordinateDTO(float latitude, float longitude) {
         this.latitude = latitude;
         this.longitude = longitude;

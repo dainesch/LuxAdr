@@ -2,17 +2,21 @@ package lu.dainesch.luxadrservice.api;
 
 import lu.dainesch.luxadrdto.SearchRequest;
 import java.util.List;
+import java.util.stream.Collectors;
 import javax.inject.Inject;
-import javax.json.Json;
-import javax.json.JsonArrayBuilder;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import lu.dainesch.luxadrdto.SearchResult;
+import lu.dainesch.luxadrdto.entity.HouseNumberDTO;
+import lu.dainesch.luxadrdto.entity.PostalCodeDTO;
+import lu.dainesch.luxadrdto.entity.StreetDTO;
 import lu.dainesch.luxadrservice.adr.entity.HouseNumber;
 import lu.dainesch.luxadrservice.adr.entity.PostalCode;
 import lu.dainesch.luxadrservice.adr.entity.Street;
@@ -30,52 +34,40 @@ public class StreetResource {
 
     @GET
     @Path("{id}")
-    public Response getById(@PathParam("id") Long id) {
+    public StreetDTO getById(@PathParam("id") Long id) {
         Street str = strHand.getById(id);
         if (str == null) {
-            return Response.status(Response.Status.NOT_FOUND).build();
+            throw new WebApplicationException(Response.Status.NOT_FOUND);
         }
 
-        return Response.ok(str.toJson(true).build()).build();
+        return str.toDTO(true);
     }
 
     @GET
     @Path("{id}/postcodes")
-    public Response getPostCodes(@PathParam("id") Long id) {
+    public List<PostalCodeDTO> getPostCodes(@PathParam("id") Long id) {
         List<PostalCode> streets = strHand.getPostCodes(id);
-        JsonArrayBuilder ret = Json.createArrayBuilder();
-        streets.forEach((st) -> {
-            ret.add(st.toJson());
-        });
-
-        return Response.ok(ret.build()).build();
+        return streets.stream().map(s -> s.toDTO()).collect(Collectors.toList());
     }
 
     @GET
     @Path("{id}/numbers")
-    public Response getNumbers(@PathParam("id") Long id) {
+    public List<HouseNumberDTO> getNumbers(@PathParam("id") Long id) {
         List<HouseNumber> nums = strHand.getHouseNumbers(id);
-        JsonArrayBuilder ret = Json.createArrayBuilder();
-        nums.forEach((st) -> {
-            ret.add(st.toJson(false));
-        });
-
-        return Response.ok(ret.build()).build();
+        return nums.stream().map(n -> n.toDTO(false)).collect(Collectors.toList());
     }
 
     @POST
     @Path("search")
-    public Response search(SearchRequest req) {
+    public SearchResult<StreetDTO> search(SearchRequest req) {
         if (!as.validateAndFix(req, true)) {
-            return as.emptyArrayResponse();
+            return new SearchResult<>(req);
         }
         List<Street> streets = strHand.search(req);
-        JsonArrayBuilder ret = Json.createArrayBuilder();
-        streets.forEach((str) -> {
-            ret.add(str.toJson(true));
-        });
-
-        return Response.ok(as.wrapSearchResult(req, ret)).build();
+        return new SearchResult<>(
+                req,
+                streets.stream().map(l -> l.toDTO(true)).collect(Collectors.toList())
+        );
 
     }
 

@@ -20,6 +20,9 @@ public class StreetDTO implements Serializable {
     private LocalityDTO locality;
     private Set<AlternateNameDTO> altNames = new HashSet<>();
 
+    public StreetDTO() {
+    }
+
     public StreetDTO(Long id, boolean active, String name, String streetCode) {
         this.id = id;
         this.active = active;

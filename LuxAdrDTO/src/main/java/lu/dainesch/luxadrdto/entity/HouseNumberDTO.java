@@ -15,6 +15,9 @@ public class HouseNumberDTO implements Serializable {
     private BuildingDTO building;
     private Long buildingId;
 
+    public HouseNumberDTO() {
+    }
+
     public HouseNumberDTO(Long id, String number) {
         this.id = id;
         this.number = number;

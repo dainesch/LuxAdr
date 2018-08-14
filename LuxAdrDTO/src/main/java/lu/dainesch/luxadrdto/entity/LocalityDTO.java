@@ -19,6 +19,9 @@ public class LocalityDTO implements Serializable {
 
     private Set<AlternateNameDTO> altNames = new HashSet<>();
 
+    public LocalityDTO() {
+    }
+
     public LocalityDTO(Long id, boolean active, String name, boolean city) {
         this.id = id;
         this.active = active;

@@ -19,6 +19,9 @@ public class BuildingDTO implements Serializable {
     private Set<HouseNumberDTO> numbers = new HashSet<>();
     private CoordinateDTO coordinates;
 
+    public BuildingDTO() {
+    }
+
     public BuildingDTO(Long id, boolean active) {
         this.id = id;
         this.active = active;

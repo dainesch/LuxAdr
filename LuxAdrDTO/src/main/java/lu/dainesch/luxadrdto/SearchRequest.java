@@ -14,6 +14,9 @@ public class SearchRequest implements Serializable {
     private Boolean beginning;
     private String value;
 
+    public SearchRequest() {
+    }
+
     public int getCorrId() {
         return corrId;
     }
@@ -37,8 +40,6 @@ public class SearchRequest implements Serializable {
     public void setBeginning(Boolean beginning) {
         this.beginning = beginning;
     }
-    
-    
 
     public String getValue() {
         return value;

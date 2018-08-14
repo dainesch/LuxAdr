@@ -17,6 +17,9 @@ public class PostalCodeDTO implements Serializable {
     private Integer minMailbox;
     private Integer maxMailbox;
 
+    public PostalCodeDTO() {
+    }
+
     public PostalCodeDTO(Long id, boolean active, String code, PostCodeType type, Integer minMailbox, Integer maxMailbox) {
         this.id = id;
         this.active = active;

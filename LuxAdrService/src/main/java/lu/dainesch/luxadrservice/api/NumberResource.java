@@ -7,8 +7,10 @@ import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import lu.dainesch.luxadrdto.entity.HouseNumberDTO;
 import lu.dainesch.luxadrservice.adr.entity.HouseNumber;
 
 @Path("number")
@@ -21,13 +23,13 @@ public class NumberResource {
 
     @GET
     @Path("{id}")
-    public Response getById(@PathParam("id") Long id) {
+    public HouseNumberDTO getById(@PathParam("id") Long id) {
         HouseNumber num = em.find(HouseNumber.class, id);
         if (num == null) {
-            return Response.status(Response.Status.NOT_FOUND).build();
+            throw new WebApplicationException(Response.Status.NOT_FOUND);
         }
 
-        return Response.ok(num.toJson(true).build()).build();
+        return num.toDTO(true);
     }
 
 }

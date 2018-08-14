@@ -1,10 +1,35 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <title>Start Page</title>
+        <title>LuxAdrService</title>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <link rel="stylesheet" type="text/css" href="https://unpkg.com/swagger-ui-dist@3/swagger-ui.css">
     </head>
     <body>
-        <h1>Hello World!</h1>
+        <div id="swagger"></div>
+        <script src="https://unpkg.com/swagger-ui-dist@3/swagger-ui-standalone-preset.js"></script>
+        <script src="https://unpkg.com/swagger-ui-dist@3/swagger-ui-bundle.js"></script>
+
+        <script type="text/javascript">
+            window.onload = function () {
+                // Build a system
+                const ui = SwaggerUIBundle({
+                    url: "./api/v1/openapi.json",
+                    dom_id: '#swagger',
+                    deepLinking: true,
+                    presets: [
+                        SwaggerUIBundle.presets.apis,
+                        SwaggerUIStandalonePreset
+                    ],
+                    plugins: [
+                        SwaggerUIBundle.plugins.DownloadUrl
+                    ],
+                    layout: "StandaloneLayout",
+                })
+                window.ui = ui
+            };
+
+
+        </script>
     </body>
 </html>

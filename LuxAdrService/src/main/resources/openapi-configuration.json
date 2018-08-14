@@ -1,5 +1,5 @@
 {
-    "scannerclass" : "io.swagger.v3.jaxrs2.integration.JaxrsApplicationScanner",
+    "scannerClass" : "io.swagger.v3.jaxrs2.integration.JaxrsApplicationScanner",
     "prettyPrint" : true,
     "openAPI": {
         "info": {
@@ -13,6 +13,9 @@
                 "name": "Apache 2.0",
                 "url": "http://www.apache.org/licenses/LICENSE-2.0.html"
             }
-        }
+        },
+        "servers" : [
+            {"url": "/LuxAdrService"}
+        ]
     }
 }

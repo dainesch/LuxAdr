@@ -6,8 +6,10 @@ import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import lu.dainesch.luxadrdto.entity.BuildingDTO;
 import lu.dainesch.luxadrservice.adr.entity.Building;
 import lu.dainesch.luxadrservice.adr.handler.BuildingHandler;
 
@@ -21,13 +23,13 @@ public class BuildingResource {
 
     @GET
     @Path("{id}")
-    public Response getById(@PathParam("id") Long id) {
+    public BuildingDTO getById(@PathParam("id") Long id) {
         Building b = builHand.getById(id);
         if (b == null) {
-            return Response.status(Response.Status.NOT_FOUND).build();
+            throw new WebApplicationException(Response.Status.NOT_FOUND);
         }
 
-        return Response.ok(b.toJson(true).build()).build();
+        return b.toDTO(true);
     }
 
 }
