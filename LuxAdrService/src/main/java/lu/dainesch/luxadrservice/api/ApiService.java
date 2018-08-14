@@ -1,6 +1,6 @@
 package lu.dainesch.luxadrservice.api;
 
-import lu.dainesch.luxadrservice.api.dto.SearchRequest;
+import lu.dainesch.luxadrdto.SearchRequest;
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
@@ -10,7 +10,7 @@ import javax.json.JsonArrayBuilder;
 import javax.json.JsonObject;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
-import lu.dainesch.luxadrservice.api.dto.GeoRequest;
+import lu.dainesch.luxadrdto.GeoRequest;
 import lu.dainesch.luxadrservice.base.Config;
 import lu.dainesch.luxadrservice.base.ConfigType;
 import lu.dainesch.luxadrservice.base.ConfigValue;

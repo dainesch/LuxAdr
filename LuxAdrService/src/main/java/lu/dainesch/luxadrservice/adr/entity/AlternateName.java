@@ -17,6 +17,7 @@ import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 import javax.persistence.TableGenerator;
+import lu.dainesch.luxadrdto.entity.AlternateNameDTO;
 
 @Entity
 @Table(name = "ALT_NAME")
@@ -103,6 +104,10 @@ public class AlternateName implements Serializable {
         }
         ret.add("name", name);
         return ret;
+    }
+    
+    public AlternateNameDTO toDTO() {
+        return new AlternateNameDTO(lang, name);
     }
 
     @Override

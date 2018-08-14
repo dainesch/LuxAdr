@@ -11,7 +11,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import lu.dainesch.luxadrservice.api.dto.SearchRequest;
+import lu.dainesch.luxadrdto.SearchRequest;
 import lu.dainesch.luxadrservice.search.AdrSearchEntry;
 import lu.dainesch.luxadrservice.search.SearchException;
 import lu.dainesch.luxadrservice.search.SearchService;

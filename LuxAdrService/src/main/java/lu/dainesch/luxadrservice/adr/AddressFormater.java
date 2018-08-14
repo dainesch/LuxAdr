@@ -4,9 +4,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import lu.dainesch.luxadrdto.entity.PostCodeType;
 import lu.dainesch.luxadrservice.adr.entity.Building;
 import lu.dainesch.luxadrservice.adr.entity.HouseNumber;
-import lu.dainesch.luxadrservice.adr.entity.PostCodeType;
+
 
 public class AddressFormater {
 

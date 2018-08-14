@@ -1,9 +1,12 @@
-package lu.dainesch.luxadrservice.api.dto;
+package lu.dainesch.luxadrdto;
 
 import java.io.Serializable;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement
+@XmlAccessorType(XmlAccessType.FIELD)
 public class SearchRequest implements Serializable {
 
     private int corrId;

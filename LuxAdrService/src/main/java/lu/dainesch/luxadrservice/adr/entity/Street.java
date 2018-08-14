@@ -20,6 +20,7 @@ import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.TableGenerator;
+import lu.dainesch.luxadrdto.entity.StreetDTO;
 import lu.dainesch.luxadrservice.base.ImportedEntity;
 
 @Entity
@@ -178,6 +179,15 @@ public class Street extends ImportedEntity {
 
         return ret;
 
+    }
+    
+    public StreetDTO toDTO(boolean includeLoc) {
+        StreetDTO ret = new StreetDTO(id, active, name, streetCode);
+        altNames.stream().map(n -> n.toDTO()).forEach(d -> ret.getAltNames().add(d));
+        if (includeLoc) {
+            ret.setLocality(locality.toDTO());
+        }
+        return ret;
     }
 
     @Override

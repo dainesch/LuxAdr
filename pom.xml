@@ -14,7 +14,8 @@
     <modules>
         <module>LuxAdrService</module>
     <module>LuxAdrAdmin</module>
-  </modules>
+        <module>LuxAdrDTO</module>
+    </modules>
     
     <dependencies>
         <dependency>

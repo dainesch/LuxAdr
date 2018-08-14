@@ -21,6 +21,7 @@ import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.TableGenerator;
+import lu.dainesch.luxadrdto.entity.BuildingDTO;
 import lu.dainesch.luxadrservice.base.ImportedEntity;
 
 @Entity
@@ -169,6 +170,23 @@ public class Building extends ImportedEntity {
 
         return ret;
 
+    }
+
+    public BuildingDTO toDTO(boolean includeNumbers) {
+        BuildingDTO ret = new BuildingDTO(id, active);
+        if (street != null) {
+            ret.setStreet(street.toDTO(true));
+        }
+        if (postalCode != null) {
+            ret.setPostalCode(postalCode.toDTO());
+        }
+        if (includeNumbers) {
+            numbers.stream().map(n -> n.toDTO(false)).forEach(d -> ret.getNumbers().add(d));
+        }
+        if (coordinates != null) {
+            ret.setCoordinates(coordinates.toDTO());
+        }
+        return ret;
     }
 
     @Override

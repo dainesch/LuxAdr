@@ -17,7 +17,7 @@ import javax.ws.rs.core.Response;
 
 import lu.dainesch.luxadrservice.adr.entity.Building;
 import lu.dainesch.luxadrservice.adr.handler.BuildingHandler;
-import lu.dainesch.luxadrservice.api.dto.GeoRequest;
+import lu.dainesch.luxadrdto.GeoRequest;
 import lu.dainesch.luxadrservice.search.AdrSearchEntry;
 import lu.dainesch.luxadrservice.search.LuceneSingleton;
 import lu.dainesch.luxadrservice.search.SearchException;

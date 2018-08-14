@@ -14,6 +14,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.TableGenerator;
+import lu.dainesch.luxadrdto.entity.HouseNumberDTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -80,6 +81,16 @@ public class HouseNumber implements Serializable, Comparable<HouseNumber> {
 
         return ret;
 
+    }
+    
+    public HouseNumberDTO toDTO(boolean includeBuilding) {
+        HouseNumberDTO ret = new HouseNumberDTO(id, number);
+        if (includeBuilding) {
+            ret.setBuilding(building.toDTO(false));
+        } else {
+            ret.setBuildingId(building.getId());
+        }
+        return ret;
     }
 
     @Override

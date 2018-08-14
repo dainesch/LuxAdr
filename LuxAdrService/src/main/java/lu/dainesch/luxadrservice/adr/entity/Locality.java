@@ -20,6 +20,7 @@ import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.TableGenerator;
+import lu.dainesch.luxadrdto.entity.LocalityDTO;
 import lu.dainesch.luxadrservice.base.ImportedEntity;
 
 @Entity
@@ -172,6 +173,12 @@ public class Locality extends ImportedEntity {
         }
         return ret;
 
+    }
+
+    public LocalityDTO toDTO() {
+        LocalityDTO ret = new LocalityDTO(id, active, name, city);
+        altNames.stream().map(n -> n.toDTO()).forEach(d -> ret.getAltNames().add(d));
+        return ret;
     }
 
     @Override

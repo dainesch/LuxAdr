@@ -6,10 +6,10 @@ import javax.ejb.AsyncResult;
 import javax.ejb.Asynchronous;
 import javax.ejb.Stateless;
 import javax.persistence.NoResultException;
-import lu.dainesch.luxadrservice.adr.entity.PostCodeType;
 import lu.dainesch.luxadrservice.adr.entity.PostalCode;
 import lu.dainesch.luxadrservice.adr.entity.Street;
-import lu.dainesch.luxadrservice.api.dto.SearchRequest;
+import lu.dainesch.luxadrdto.SearchRequest;
+import lu.dainesch.luxadrdto.entity.PostCodeType;
 import lu.dainesch.luxadrservice.base.Import;
 import lu.dainesch.luxadrservice.input.FixedParser;
 

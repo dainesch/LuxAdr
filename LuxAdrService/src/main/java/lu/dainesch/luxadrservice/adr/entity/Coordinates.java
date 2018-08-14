@@ -12,6 +12,7 @@ import javax.persistence.Id;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.TableGenerator;
+import lu.dainesch.luxadrdto.entity.CoordinateDTO;
 
 @Entity
 @Table(name = "COORDINATES")
@@ -72,6 +73,10 @@ public class Coordinates implements Serializable {
 
         return ret;
 
+    }
+    
+    public CoordinateDTO toDTO() {
+        return new CoordinateDTO(latitude, longitude);
     }
 
     @Override

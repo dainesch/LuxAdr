@@ -18,6 +18,8 @@ import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.TableGenerator;
+import lu.dainesch.luxadrdto.entity.PostCodeType;
+import lu.dainesch.luxadrdto.entity.PostalCodeDTO;
 import lu.dainesch.luxadrservice.base.ImportedEntity;
 
 @Entity
@@ -143,6 +145,10 @@ public class PostalCode extends ImportedEntity {
             ret.add("maxMailbox", maxMailbox);
         }
         return ret;
+    }
+    
+    public PostalCodeDTO toDTO() {
+        return new PostalCodeDTO(id, active, code, type, minMailbox, maxMailbox);
     }
 
     @Override
