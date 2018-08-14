@@ -7,15 +7,15 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.FIELD)
-public class AdrSearchResult implements Serializable {
+public class AdrEntry implements Serializable {
 
     private long buildingId;
     private String value;
 
-    public AdrSearchResult() {
+    public AdrEntry() {
     }
 
-    public AdrSearchResult(long buildingId, String value) {
+    public AdrEntry(long buildingId, String value) {
         this.buildingId = buildingId;
         this.value = value;
     }

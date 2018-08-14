@@ -7,6 +7,7 @@
             "title": "LuxAdr API",
             "description": "Public API for LuxAdr",
             "contact": {
+                "name": "Dainesch",
                 "url": "https://github.com/dainesch/LuxAdr"
             },
             "license": {
@@ -15,7 +16,7 @@
             }
         },
         "servers" : [
-            {"url": "/LuxAdrService"}
+            {"name": "Default", "url": "/LuxAdrService"}
         ]
     }
 }

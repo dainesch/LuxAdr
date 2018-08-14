@@ -1,5 +1,6 @@
 package lu.dainesch.luxadrdto;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.io.Serializable;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -9,9 +10,13 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlAccessorType(XmlAccessType.FIELD)
 public class SearchRequest implements Serializable {
 
+    @Schema(description = "Correlation id. Server will return the same id you sent to avoid overtaking autocomplete requests.", example = "999")
     private int corrId;
+    @Schema(description = "Maximum results you request. The server however limits the value if it is too big", example = "10")
     private int maxResults;
+    @Schema(description = "Should the value you search be at the beginning of the text or just included somewhere?")
     private Boolean beginning;
+    @Schema(description = "The value you search for.", example = "text")
     private String value;
 
     public SearchRequest() {

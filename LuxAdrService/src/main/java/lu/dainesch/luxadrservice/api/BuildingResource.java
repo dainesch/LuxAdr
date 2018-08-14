@@ -1,5 +1,6 @@
 package lu.dainesch.luxadrservice.api;
 
+import io.swagger.v3.oas.annotations.Operation;
 import javax.inject.Inject;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
@@ -14,8 +15,8 @@ import lu.dainesch.luxadrservice.adr.entity.Building;
 import lu.dainesch.luxadrservice.adr.handler.BuildingHandler;
 
 @Path("building")
-@Consumes(MediaType.APPLICATION_JSON)
-@Produces(MediaType.APPLICATION_JSON)
+@Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
+@Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
 public class BuildingResource {
 
     @Inject
@@ -23,6 +24,10 @@ public class BuildingResource {
 
     @GET
     @Path("{id}")
+    @Operation(summary = "Building by id",
+            description = "Returns the building with the given id. Includes also inactive buildings.",
+            tags = {"building"}
+    )
     public BuildingDTO getById(@PathParam("id") Long id) {
         Building b = builHand.getById(id);
         if (b == null) {

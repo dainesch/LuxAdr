@@ -1,5 +1,6 @@
 package lu.dainesch.luxadrservice.api;
 
+import io.swagger.v3.oas.annotations.Operation;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
@@ -25,8 +26,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 @Path("geo")
-@Consumes(MediaType.APPLICATION_JSON)
-@Produces(MediaType.APPLICATION_JSON)
+@Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
+@Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
 public class GeoResource {
 
     private static final Logger LOG = LoggerFactory.getLogger(GeoResource.class);
@@ -40,6 +41,11 @@ public class GeoResource {
 
     @POST
     @Path("building/all")
+    @Operation(summary = "Returns buildings in distance of location",
+            description = "Returns the buildings in the distance of the given location. "
+            + "If properly indexed the search can be performed using the better lucene option.",
+            tags = {"geo", "building"}
+    )
     public List<BuildingDTO> getBuildingsInDistance(GeoRequest req) {
         if (!as.validateAndFix(req)) {
             return Collections.EMPTY_LIST;
@@ -68,6 +74,11 @@ public class GeoResource {
 
     @POST
     @Path("building")
+    @Operation(summary = "Returns the nearest building to the given location",
+            description = "Returns the nearest building to the given location. "
+            + "If properly indexed the search can be performed using the better lucene option.",
+            tags = {"geo", "building"}
+    )
     public BuildingDTO getNearestBuilding(GeoRequest req) {
         if (!as.validateAndFix(req)) {
             return null;

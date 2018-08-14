@@ -5,8 +5,6 @@ import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.json.Json;
 import javax.json.JsonArray;
-import javax.json.JsonArrayBuilder;
-import javax.json.JsonObject;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
 import lu.dainesch.luxadrdto.GeoRequest;
@@ -72,15 +70,6 @@ public class ApiService {
         return true;
     }
 
-    public JsonObject wrapSearchResult(SearchRequest req, JsonArrayBuilder b) {
-        JsonArray arr = b.build();
-        return Json.createObjectBuilder()
-                .add("corrId", req.getCorrId())
-                .add("count", arr.size())
-                .add("results", arr)
-                .build();
-    }
-
     public String escapeLike(String in) {
         if (in == null) {
             return null;
@@ -88,7 +77,4 @@ public class ApiService {
         return in.replace("_", "").replace("%", "").trim();
     }
 
-    public Response emptyArrayResponse() {
-        return Response.ok(EMPTY_ARR).build();
-    }
 }
