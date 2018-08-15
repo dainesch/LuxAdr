@@ -15,10 +15,11 @@
 
     <body>
         <div id="app">
+
             <div class="page-container">
                 <md-app>
                     <md-app-toolbar class="md-primary">
-                        <span class="md-title">First time setup</span>
+                        <span class="md-title">{{title}}</span>
                     </md-app-toolbar>
 
                     <md-app-drawer md-permanent="full">
@@ -27,17 +28,17 @@
                         </md-toolbar>
 
                         <md-list>
-                            <md-list-item class="md-selected">
+                            <md-list-item class="md-selected" v-on:click="toFirst">
                                 <md-icon>build</md-icon>
                                 <span class="md-list-item-text">Setup</span>
                             </md-list-item>
 
-                            <md-list-item>
+                            <md-list-item v-on:click="toDemo">
                                 <md-icon>play_arrow</md-icon>
                                 <span class="md-list-item-text">Demo</span>
                             </md-list-item>
 
-                            <md-list-item>
+                            <md-list-item v-on:click="toSett">
                                 <md-icon>settings</md-icon>
                                 <span class="md-list-item-text">Config</span>
                             </md-list-item>
@@ -47,133 +48,166 @@
 
                     <md-app-content>
 
-                        <md-steppers md-alternative>
-                            <md-step id="zero" md-label="Connect" :md-done="steps.zero">
-                                <div class="md-headline">Test connection to service</div>
-                                <div class="spacerV">
-                                    First we need to test the connection to the LuxAdrService admin API. On first deploy the admin API is unsecured
-                                    but we later recommend to enable protection. For later use you can also define a remote server address to
-                                    manage your instance.<br>
-                                    Well the default settings should work the first time, lets try.
-                                </div>
-                                <div class="spacerV">
-                                    <md-field>
-                                        <label>Service URL</label>
-                                        <md-input v-model="url"></md-input>
-                                    </md-field>
-                                    <md-field>
-                                        <label>Service Key</label>
-                                        <md-input v-model="key"></md-input>
-                                    </md-field>
-                                    <div class="centerText">
-                                        <md-button class="md-raised md-primary" v-on:click="ping">
-                                            {{testConText}}
-                                            <md-icon v-if="connected">done</md-icon>
-                                        </md-button>
+                        <!-- FIRST PAGE -->
+                        <div v-if="mode == 'first'">
 
+                            <md-steppers md-alternative>
+                                <md-step id="zero" md-label="Connect" :md-done="steps.zero">
+                                    <div class="md-headline">Test connection to service</div>
+                                    <div class="spacerV">
+                                        First we need to test the connection to the LuxAdrService admin API. On first deploy the admin API is unsecured
+                                        but we later recommend to enable protection. For later use you can also define a remote server address to
+                                        manage your instance.<br>
+                                        Well the default settings should work the first time, lets try.
                                     </div>
-                                </div>
+                                    <div class="spacerV">
+                                        <md-field>
+                                            <label>Service URL</label>
+                                            <md-input v-model="url"></md-input>
+                                        </md-field>
+                                        <md-field>
+                                            <label>Service Key</label>
+                                            <md-input v-model="key"></md-input>
+                                        </md-field>
+                                        <div class="centerText">
+                                            <md-button class="md-raised md-primary" v-on:click="ping">
+                                                {{testConText}}
+                                                <md-icon v-if="connected">done</md-icon>
+                                            </md-button>
 
-                            </md-step>
-                            <md-step id="first" md-label="Import data" :md-done="steps.first">
-                                <div class="md-headline">Import address data</div>
-                                <div class="spacerV">
-                                    Now we need to populate the database using the data provided openly from <a href="https://data.public.lu/">data.public.lu</a>.
-                                    LuxAdr will automatically download the required files and import them. <br>
-                                    The process can take a while depending on your configuration so please be patient and follow the progress in the console bellow.
-                                </div>
-                                <div class="centerText spacerV">
-                                    <md-button v-if="working == false" class="md-raised md-primary" v-on:click="importData" >
-                                        Start import
-                                    </md-button>
-                                    <md-progress-spinner v-if="working == true" class="md-accent" :md-diameter="30" md-mode="indeterminate"></md-progress-spinner>
+                                        </div>
+                                    </div>
 
-                                </div>
-
-                            </md-step>
-
-                            <md-step id="second" md-label="Import geo" :md-done="steps.second">
-                                <div class="md-headline">Import geo data</div>
-                                <div class="spacerV">
-                                    After having all the address data, it is time to import the corresponding geo data from <a href="https://data.public.lu/">data.public.lu</a>.
-                                    LuxAdr will automatically download the required files and import them. <br>
-                                    The process can take a while depending on your configuration so please be patient and follow the progress in the console bellow.
-                                </div>
-                                <div class="centerText spacerV">
-                                    <md-button v-if="working == false" class="md-raised md-primary" v-on:click="importGeoData" >
-                                        Start geo import
-                                    </md-button>
-                                    <md-progress-spinner v-if="working == true" class="md-accent" :md-diameter="30" md-mode="indeterminate"></md-progress-spinner>
-
-                                </div>
-                            </md-step>
-
-                            <md-step id="third" md-label="Index data" :md-done="steps.third">
-                                <div class="md-headline">Index imported data</div>
-                                <div class="spacerV">
-                                    To improve searching functionalities using Lucene we need to index the imported data.<br>
-                                    The process can take a while depending on your configuration so please be patient and follow the progress in the console bellow.
-                                </div>
-                                <div class="centerText spacerV">
-                                    <md-button v-if="working == false" class="md-raised md-primary" v-on:click="indexData" >
-                                        Index data
-                                    </md-button>
-                                    <md-progress-spinner v-if="working == true" class="md-accent" :md-diameter="30" md-mode="indeterminate"></md-progress-spinner>
-
-                                </div>
-                            </md-step>
-                            <md-step id="fourth" md-label="Secure" :md-done="steps.fourth">
-                                <div class="md-headline">Secure the admin API</div>
-                                <div v-if="config.length == 0" class="spacerV">
-                                    <div>
-                                        The admin API can be secured by a key to avoid unauthorized access. Write down the current key and enable security.
+                                </md-step>
+                                <md-step id="first" md-label="Import data" :md-done="steps.first">
+                                    <div class="md-headline">Import address data</div>
+                                    <div class="spacerV">
+                                        Now we need to populate the database using the data provided openly from <a href="https://data.public.lu/">data.public.lu</a>.
+                                        LuxAdr will automatically download the required files and import them. <br>
+                                        The process can take a while depending on your configuration so please be patient and follow the progress in the console bellow.
                                     </div>
                                     <div class="centerText spacerV">
-                                        <md-button class="md-raised md-primary" v-on:click="getConfig" >
-                                            Get current config 
+                                        <md-button v-if="working == false" class="md-raised md-primary" v-on:click="importData" >
+                                            Start import
                                         </md-button>
+                                        <md-progress-spinner v-if="working == true" class="md-accent" :md-diameter="30" md-mode="indeterminate"></md-progress-spinner>
+
                                     </div>
-                                </div>
+
+                                </md-step>
+
+                                <md-step id="second" md-label="Import geo" :md-done="steps.second">
+                                    <div class="md-headline">Import geo data</div>
+                                    <div class="spacerV">
+                                        After having all the address data, it is time to import the corresponding geo data from <a href="https://data.public.lu/">data.public.lu</a>.
+                                        LuxAdr will automatically download the required files and import them. <br>
+                                        The process can take a while depending on your configuration so please be patient and follow the progress in the console bellow.
+                                    </div>
+                                    <div class="centerText spacerV">
+                                        <md-button v-if="working == false" class="md-raised md-primary" v-on:click="importGeoData" >
+                                            Start geo import
+                                        </md-button>
+                                        <md-progress-spinner v-if="working == true" class="md-accent" :md-diameter="30" md-mode="indeterminate"></md-progress-spinner>
+
+                                    </div>
+                                </md-step>
+
+                                <md-step id="third" md-label="Index data" :md-done="steps.third">
+                                    <div class="md-headline">Index imported data</div>
+                                    <div class="spacerV">
+                                        To improve searching functionalities using Lucene we need to index the imported data.<br>
+                                        The process can take a while depending on your configuration so please be patient and follow the progress in the console bellow.
+                                    </div>
+                                    <div class="centerText spacerV">
+                                        <md-button v-if="working == false" class="md-raised md-primary" v-on:click="indexData" >
+                                            Index data
+                                        </md-button>
+                                        <md-progress-spinner v-if="working == true" class="md-accent" :md-diameter="30" md-mode="indeterminate"></md-progress-spinner>
+
+                                    </div>
+                                </md-step>
+                                <md-step id="fourth" md-label="Secure" :md-done="steps.fourth">
+                                    <div class="md-headline">Secure the admin API</div>
+                                    <div v-if="config.length == 0" class="spacerV">
+                                        <div>
+                                            The admin API can be secured by a key to avoid unauthorized access. Write down the current key and enable security.
+                                        </div>
+                                        <div class="centerText spacerV">
+                                            <md-button class="md-raised md-primary" v-on:click="getConfig" >
+                                                Get current config 
+                                            </md-button>
+                                        </div>
+                                    </div>
 
 
-                                <md-card md-with-hover class="spacerV">
-                                    <md-ripple v-if="config.length > 0">
-                                        <md-card-content>
-                                            <md-field>
-                                                <label>Service Key</label>
-                                                <md-input v-model="key" disabled></md-input>
-                                            </md-field>
-                                            <md-switch v-model="secured" class="md-primary">API secured</md-switch>
-                                        </md-card-content>
+                                    <md-card md-with-hover class="spacerV">
+                                        <md-ripple v-if="config.length > 0">
+                                            <md-card-content>
+                                                <md-field>
+                                                    <label>Service Key</label>
+                                                    <md-input v-model="key" disabled></md-input>
+                                                </md-field>
+                                                <md-switch v-model="secured" class="md-primary">API secured</md-switch>
+                                            </md-card-content>
 
-                                        <md-card-actions>
-                                            <md-button class="md-raised md-accent" v-on:click="saveSecure">Save</md-button>
-                                        </md-card-actions>
-                                    </md-ripple>
-                                </md-card>
-
-
-                            </md-step>
-                        </md-steppers>
+                                            <md-card-actions>
+                                                <md-button class="md-raised md-accent" v-on:click="saveSecure">Save</md-button>
+                                            </md-card-actions>
+                                        </md-ripple>
+                                    </md-card>
 
 
+                                </md-step>
+                            </md-steppers>
 
-                        <md-card id="console">
-                            <md-card-header>
-                                <div class="md-title">Console</div>
-                            </md-card-header>
 
-                            <md-card-content>
 
-                                <log-entry v-for="l in log" :item="l" :key="l.id"></log-entry>
+                            <md-card id="console">
+                                <md-card-header>
+                                    <div class="md-title">Console</div>
+                                </md-card-header>
 
-                            </md-card-content>
+                                <md-card-content>
 
-                            <md-card-actions>
-                                <md-button v-on:click="refreshLog">Refresh</md-button>
-                            </md-card-actions>
-                        </md-card>
-                        <md-progress-bar id="progress" class="md-accent" v-bind:md-mode="progressMode"></md-progress-bar>
+                                    <log-entry v-for="l in log" :item="l" :key="l.id"></log-entry>
+
+                                </md-card-content>
+
+                                <md-card-actions>
+                                    <md-button v-on:click="refreshLog">Refresh</md-button>
+                                </md-card-actions>
+                            </md-card>
+                            <md-progress-bar id="progress" class="md-accent" v-bind:md-mode="progressMode"></md-progress-bar>
+
+                        </div>
+
+                        <!-- DEMO -->
+                        <div v-if="mode == 'demo'">
+                            <md-autocomplete v-model="value" :md-options="searchResults" @md-changed="searchAddr" @md-selected="selectAddr">
+                                <label>Address search (Lucene)</label>
+
+                                <template slot="md-autocomplete-item" slot-scope="{ item }">{{ item.value }}</template>
+                            </md-autocomplete>
+                        </div>
+
+                        <!-- SETTINGS -->
+                        <div v-if="mode == 'sett'">
+                            <md-card class="md-accent" md-with-hover>
+                                <md-card-content>
+                                    Warning: Be careful when modifying settings, you can break stuff! Also you can configure the server URL and key in the setup.
+                                </md-card-content>
+                            </md-card>
+                            <div v-if="config.length == 0" class="centerText spacerV">
+                                <md-button class="md-raised md-primary" v-on:click="getConfig" >
+                                    Get current config 
+                                </md-button>
+                            </div>
+
+                            <div v-if="config.length > 0" class="spacerV">
+                                dffd
+                            </div>
+
+                        </div>
                     </md-app-content>
                 </md-app>
             </div>

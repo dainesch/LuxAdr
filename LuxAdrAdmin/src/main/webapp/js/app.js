@@ -3,17 +3,17 @@ var CONF = {
     ADMIN_ACCESS_CHECK: {key: "ADMIN_ACCESS_CHECK"},
     ADMIN_ACCESS_KEY: {key: "ADMIN_ACCESS_KEY"}
 };
+var MODES = {
+    FIRST: {title: "First time setup", key: "first"},
+    DEMO: {title: "Normal API demo", key: "demo"},
+    SETTINGS: {title: "Settings", key: "sett"}
+};
 
 
 Vue.use(VueMaterial.default);
 
 
 Vue.component('log-entry', {
-    data: function () {
-        return {
-            count: 0
-        };
-    },
     props: ['item'],
     computed: {
         time: function () {
@@ -28,9 +28,27 @@ Vue.component('log-entry', {
     template: '<div class="logrow"><div class="logstep">{{ time }}</div><div class="logstep">{{ item.step }}</div>&nbsp;&gt;&nbsp;{{ item.log }}</div>'
 });
 
+Vue.component('conf-entry', {
+    data: function () {
+        return {
+            count: 0
+        };
+    },
+    props: ['item'],
+    computed: {
+    },
+    template: '<md-field><label>Type here!</label><md-input v-model="type"></md-input><span class="md-helper-text">Helper text</span></md-field>'
+});
+
+
+
+
+
 new Vue({
     el: '#app',
     data: {
+        title: MODES.FIRST.title,
+        mode: MODES.FIRST.key,
         url: "http://localhost:8080/LuxAdrService",
         key: "ufnDMuLS7dOO51JlAtuSoszHxl0Wico4sPqR96FiNdf3reLClQNp6QFhIVPbS6Vi",
         secured: false,
@@ -40,13 +58,30 @@ new Vue({
         log: [],
         working: false,
         config: [],
-        steps: {zero: false, first: false, second: false, third: false, fourth: false}
+        steps: {zero: false, first: false, second: false, third: false, fourth: false},
+        //
+        corrId: 0,
+        searchResults: [],
+        value: ''
     },
     created: function () {
         setInterval(this.refreshLog, 10000);
         this.refreshLog();
     },
     methods: {
+        page: function (p) {
+            this.title = p.title;
+            this.mode = p.key;
+        },
+        toFirst: function () {
+            this.page(MODES.FIRST);
+        },
+        toDemo: function () {
+            this.page(MODES.DEMO);
+        },
+        toSett: function () {
+            this.page(MODES.SETTINGS);
+        },
         ping: function () {
             if (this.working) {
                 return;
@@ -184,6 +219,45 @@ new Vue({
             }).catch(function (ex) {
                 _this.setWorking(false);
             });
+        },
+        // demo
+        searchAddr: function (text) {
+            this.searchResults = new Promise(resolve => {
+                
+                this.corrId++;
+                
+                var _this = this;
+                fetch(_this.url + '/api/v1/search', {
+                    method: "POST",
+                    mode: "cors",
+                    headers: {
+                        "Content-Type": "application/json; charset=utf-8"
+                    },
+                    body: JSON.stringify({
+                        corrId: _this.corrId,
+                        maxResults: 20,
+                        value: text
+                    })
+                }).then(function (response) {
+                    
+                    if (response.ok) {
+                         return response.json();
+                    }
+                    resolve([]);
+                }).then( function (res) {
+                    
+                    if (_this.corrId === res.corrId) {
+                        resolve(res.results);
+                    }
+                    resolve([]);
+                }).catch(function (ex) {
+                    resolve([]);
+                });
+
+            })
+        },
+        selectAddr: function (item) {
+            this.value = item.value;
         }
     }
 });
