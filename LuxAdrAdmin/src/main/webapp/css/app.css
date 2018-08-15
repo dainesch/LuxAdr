@@ -1,0 +1,53 @@
+
+
+html,body {
+    min-height: 100%;
+}
+
+.md-app {
+    height: 100vh;
+}
+
+.md-drawer {
+    width: 230px;
+    max-width: calc(100vw - 125px);
+}
+
+#console {
+    position: absolute;
+    bottom: 16px;
+    right: 16px;
+    left: 16px;
+}
+#console .md-card-content {
+    height: 200px;
+    overflow-y: scroll;
+    overflow-x: hidden;
+}
+#progress {
+    position: absolute;
+    bottom: 5px;
+    right: 16px;
+    left: 16px;
+}
+.logrow {
+    font-size: 8pt;
+    line-height: 18px;
+    border-bottom: 1px solid white;
+}
+.logstep {
+    width: 100px;
+    background-color: #e1eaff;
+    text-align: center;
+    display: inline-block;
+}
+
+.spacerV10 {
+    margin-top: 10px;
+}
+.spacerV {
+    margin-top: 16px;
+}
+.centerText {
+    text-align: center;
+}

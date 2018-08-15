@@ -1,5 +1,6 @@
 package lu.dainesch.luxadrservice.admin;
 
+import java.math.BigDecimal;
 import java.util.logging.Level;
 import javax.inject.Inject;
 import javax.json.Json;
@@ -30,6 +31,12 @@ public class ActionsResource {
     private SearchService search;
     @Inject
     private BatchImportService importServ;
+    
+    @Path("ping")
+    @POST
+    public JsonObject ping() {
+        return Json.createObjectBuilder().add("time", System.currentTimeMillis()).build();
+    }
 
     @Path("index")
     @POST
