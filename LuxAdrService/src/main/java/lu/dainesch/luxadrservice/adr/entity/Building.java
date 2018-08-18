@@ -51,6 +51,8 @@ import lu.dainesch.luxadrservice.base.ImportedEntity;
             + "join st.locality loc "
             + "where b.active = true and pc.type = :type "
             + "order by b.number")
+    ,
+    @NamedQuery(name = "building.count", query = "Select count(b) from Building b")
 })
 public class Building extends ImportedEntity {
 

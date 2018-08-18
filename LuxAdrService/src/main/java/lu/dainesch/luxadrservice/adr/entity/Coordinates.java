@@ -20,7 +20,7 @@ import lu.dainesch.luxadrdto.entity.CoordinateDTO;
 @Table(name = "COORDINATES")
 @Cacheable
 @NamedQueries({
-    @NamedQuery(name = "coordinates.all", query = "Select c from Coordinates c")
+    @NamedQuery(name = "coordinates.count", query = "Select count(c) from Coordinates c")
 })
 public class Coordinates implements Serializable {
 

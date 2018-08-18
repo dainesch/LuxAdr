@@ -114,6 +114,10 @@ public class BuildingHandler extends ImportedEntityHandler<Building> {
                 .getResultList();
 
     }
+    
+    public Long getBuildingCount() {
+        return em.createNamedQuery("building.count", Long.class).getSingleResult();
+    }
 
     public Building createOrUpdate(Building bui, AppProcess proc) {
         Building ret = getByNumber(bui.getNumber());

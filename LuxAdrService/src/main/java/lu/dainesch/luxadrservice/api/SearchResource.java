@@ -5,16 +5,13 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import javax.inject.Inject;
 import javax.ws.rs.Consumes;
-import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import lu.dainesch.luxadrdto.AdrEntry;
 import lu.dainesch.luxadrdto.SearchRequest;
-import lu.dainesch.luxadrdto.SearchResult;
 import lu.dainesch.luxadrdto.SearchResultAdrEntry;
 import lu.dainesch.luxadrservice.search.AdrSearchEntry;
 import lu.dainesch.luxadrservice.search.SearchException;
@@ -43,6 +40,10 @@ public class SearchResource {
         if (!as.validateAndFix(req)) {
             return new SearchResultAdrEntry(req);
         }
+        
+        if (!search.isReady()) {
+            throw new WebApplicationException("Search is disabled or index is not created", Response.Status.SERVICE_UNAVAILABLE);
+        }
 
         try {
             Set<AdrSearchEntry> results = search.search(req.getValue(), req.getMaxResults());
@@ -52,7 +53,7 @@ public class SearchResource {
             );
 
         } catch (SearchException ex) {
-            LOG.error("Error while searching for " + req.getValue());
+            LOG.error("Error while searching for " + req.getValue(), ex);
             throw new WebApplicationException("Error during search", Response.Status.INTERNAL_SERVER_ERROR);
         }
 

@@ -24,6 +24,13 @@ import javax.persistence.TemporalType;
     @NamedQuery(name = "process.latest",
             query = "Select i from AppProcess i "
             + "where i.start = (Select MAX(i2.start) from AppProcess i2)")
+    ,
+    @NamedQuery(name = "process.by.state.step",
+            query = "Select distinct p from AppProcess p "
+            + "join p.logEntries l "
+            + "where p.state = :state "
+            + "and l.step = :step "
+            + "order by p.end desc ")
 })
 @Table(name = "APP_PROCESS")
 public class AppProcess implements Serializable {

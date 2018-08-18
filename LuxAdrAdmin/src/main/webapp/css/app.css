@@ -13,6 +13,12 @@ html,body {
     max-width: calc(100vw - 125px);
 }
 
+#statusList {
+    position: absolute;
+    bottom: 0px;
+    right: 0px;
+    left: 0px;
+}
 #console {
     position: absolute;
     bottom: 16px;

@@ -62,4 +62,16 @@ public class ProcessHandler {
                 .getResultList();
     }
 
+    public AppProcess getLastProcess(ProcessingStep step) {
+        try {
+            return em.createNamedQuery("process.by.state.step", AppProcess.class)
+                    .setParameter("state", AppProcess.ImportState.COMPLETED)
+                    .setParameter("step", step)
+                    .setMaxResults(1)
+                    .getSingleResult();
+        } catch (NoResultException ex) {
+            return null;
+        }
+    }
+
 }

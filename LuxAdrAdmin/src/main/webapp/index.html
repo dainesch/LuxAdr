@@ -28,21 +28,40 @@
                         </md-toolbar>
 
                         <md-list>
-                            <md-list-item class="md-selected" v-on:click="toFirst">
+                            <md-list-item ref="firstMenu" class="md-selected" v-on:click="toFirst">
                                 <md-icon>build</md-icon>
                                 <span class="md-list-item-text">Setup</span>
                             </md-list-item>
 
-                            <md-list-item v-on:click="toDemo">
+                            <md-list-item ref="demoMenu" v-on:click="toDemo">
                                 <md-icon>play_arrow</md-icon>
                                 <span class="md-list-item-text">Demo</span>
                             </md-list-item>
 
-                            <md-list-item v-on:click="toSett">
+                            <md-list-item ref="settMenu" v-on:click="toSett">
                                 <md-icon>settings</md-icon>
                                 <span class="md-list-item-text">Config</span>
                             </md-list-item>
 
+                        </md-list>
+
+                        <md-list id="statusList" class="md-dense">
+                            <md-list-item>
+                                <span class="md-list-item-text">Data items </span>
+                                <md-badge>{{ serverStatus.buildingCount }}</md-badge>
+                            </md-list-item>
+                            <md-list-item>
+                                <span class="md-list-item-text">Geo items </span>
+                                <md-badge>{{ serverStatus.coordCount }}</md-badge>
+                            </md-list-item>
+                            <md-list-item>
+                                <span class="md-list-item-text">Indexed items </span>
+                                <md-badge>{{ serverStatus.indexCount }}</md-badge>
+                            </md-list-item>
+                            <md-list-item>
+                                <span class="md-list-item-text">Rebuild required </span>
+                                <md-badge>{{ serverStatus.requiresRebuild }}</md-badge>
+                            </md-list-item>
                         </md-list>
                     </md-app-drawer>
 
@@ -87,7 +106,7 @@
                                         The process can take a while depending on your configuration so please be patient and follow the progress in the console bellow.
                                     </div>
                                     <div class="centerText spacerV">
-                                        <md-button v-if="working == false" class="md-raised md-primary" v-on:click="importData" >
+                                        <md-button v-if="working == false" class="md-raised md-primary" v-on:click="importData">
                                             Start import
                                         </md-button>
                                         <md-progress-spinner v-if="working == true" class="md-accent" :md-diameter="30" md-mode="indeterminate"></md-progress-spinner>
@@ -104,117 +123,127 @@
                                         The process can take a while depending on your configuration so please be patient and follow the progress in the console bellow.
                                     </div>
                                     <div class="centerText spacerV">
-                                        <md-button v-if="working == false" class="md-raised md-primary" v-on:click="importGeoData" >
-                                            Start geo import
-                                        </md-button>
-                                        <md-progress-spinner v-if="working == true" class="md-accent" :md-diameter="30" md-mode="indeterminate"></md-progress-spinner>
+                                        <md-button v-if="working == false" class="md-raised md-primary" v-on:click="importGeoData" :disabled="serverStatus.buildingCount <= 0">
+                                                   Start geo import
+                                    </md-button>
+                                    <md-progress-spinner v-if="working == true" class="md-accent" :md-diameter="30" md-mode="indeterminate"></md-progress-spinner>
 
-                                    </div>
-                                </md-step>
+                                </div>
+                            </md-step>
 
-                                <md-step id="third" md-label="Index data" :md-done="steps.third">
-                                    <div class="md-headline">Index imported data</div>
-                                    <div class="spacerV">
-                                        To improve searching functionalities using Lucene we need to index the imported data.<br>
-                                        The process can take a while depending on your configuration so please be patient and follow the progress in the console bellow.
-                                    </div>
-                                    <div class="centerText spacerV">
-                                        <md-button v-if="working == false" class="md-raised md-primary" v-on:click="indexData" >
-                                            Index data
-                                        </md-button>
-                                        <md-progress-spinner v-if="working == true" class="md-accent" :md-diameter="30" md-mode="indeterminate"></md-progress-spinner>
-
-                                    </div>
-                                </md-step>
-                                <md-step id="fourth" md-label="Secure" :md-done="steps.fourth">
-                                    <div class="md-headline">Secure the admin API</div>
-                                    <div v-if="config.length == 0" class="spacerV">
-                                        <div>
-                                            The admin API can be secured by a key to avoid unauthorized access. Write down the current key and enable security.
-                                        </div>
-                                        <div class="centerText spacerV">
-                                            <md-button class="md-raised md-primary" v-on:click="getConfig" >
-                                                Get current config 
-                                            </md-button>
-                                        </div>
-                                    </div>
-
-
-                                    <md-card md-with-hover class="spacerV">
-                                        <md-ripple v-if="config.length > 0">
-                                            <md-card-content>
-                                                <md-field>
-                                                    <label>Service Key</label>
-                                                    <md-input v-model="key" disabled></md-input>
-                                                </md-field>
-                                                <md-switch v-model="secured" class="md-primary">API secured</md-switch>
-                                            </md-card-content>
-
-                                            <md-card-actions>
-                                                <md-button class="md-raised md-accent" v-on:click="saveSecure">Save</md-button>
-                                            </md-card-actions>
-                                        </md-ripple>
-                                    </md-card>
-
-
-                                </md-step>
-                            </md-steppers>
-
-
-
-                            <md-card id="console">
-                                <md-card-header>
-                                    <div class="md-title">Console</div>
-                                </md-card-header>
-
-                                <md-card-content>
-
-                                    <log-entry v-for="l in log" :item="l" :key="l.id"></log-entry>
-
-                                </md-card-content>
-
-                                <md-card-actions>
-                                    <md-button v-on:click="refreshLog">Refresh</md-button>
-                                </md-card-actions>
-                            </md-card>
-                            <md-progress-bar id="progress" class="md-accent" v-bind:md-mode="progressMode"></md-progress-bar>
-
-                        </div>
-
-                        <!-- DEMO -->
-                        <div v-if="mode == 'demo'">
-                            <md-autocomplete v-model="value" :md-options="searchResults" @md-changed="searchAddr" @md-selected="selectAddr">
-                                <label>Address search (Lucene)</label>
-
-                                <template slot="md-autocomplete-item" slot-scope="{ item }">{{ item.value }}</template>
-                            </md-autocomplete>
-                        </div>
-
-                        <!-- SETTINGS -->
-                        <div v-if="mode == 'sett'">
-                            <md-card class="md-accent" md-with-hover>
-                                <md-card-content>
-                                    Warning: Be careful when modifying settings, you can break stuff! Also you can configure the server URL and key in the setup.
-                                </md-card-content>
-                            </md-card>
-                            <div v-if="config.length == 0" class="centerText spacerV">
-                                <md-button class="md-raised md-primary" v-on:click="getConfig" >
-                                    Get current config 
+                            <md-step id="third" md-label="Index data" :md-done="steps.third">
+                                <div class="md-headline">Index imported data</div>
+                                <div class="spacerV">
+                                    To improve searching functionalities using Lucene we need to index the imported data.<br>
+                                    The process can take a while depending on your configuration so please be patient and follow the progress in the console bellow.
+                                </div>
+                                <div class="centerText spacerV">
+                                    <md-button v-if="working == false" class="md-raised md-primary" v-on:click="indexData" :disabled="serverStatus.coordCount <= 0">
+                                               Index data
                                 </md-button>
+                                <md-progress-spinner v-if="working == true" class="md-accent" :md-diameter="30" md-mode="indeterminate"></md-progress-spinner>
+
+                            </div>
+                        </md-step>
+                        <md-step id="fourth" md-label="Secure" :md-done="steps.fourth">
+                            <div class="md-headline">Secure the admin API</div>
+                            <div v-if="config.length == 0" class="spacerV">
+                                <div>
+                                    The admin API can be secured by a key to avoid unauthorized access. Write down the current key and enable security.
+                                </div>
+                                <div class="centerText spacerV">
+                                    <md-button class="md-raised md-primary" v-on:click="getConfig" >
+                                        Get current config 
+                                    </md-button>
+                                </div>
                             </div>
 
-                            <div v-if="config.length > 0" class="spacerV">
-                                dffd
-                            </div>
 
-                        </div>
-                    </md-app-content>
-                </md-app>
-            </div>
-        </div>
+                            <md-card md-with-hover class="spacerV">
+                                <md-ripple v-if="config.length > 0">
+                                    <md-card-content>
+                                        <md-field>
+                                            <label>Service Key</label>
+                                            <md-input v-model="key" disabled></md-input>
+                                        </md-field>
+                                        <md-switch v-model="secured" class="md-primary">API secured</md-switch>
+                                    </md-card-content>
 
-        <script src="https://unpkg.com/vue"></script>
-        <script src="https://unpkg.com/vue-material@beta"></script>
-        <script src="./js/app.js"></script>
-    </body>
+                                    <md-card-actions>
+                                        <md-button class="md-raised md-accent" v-on:click="saveSecure">Save</md-button>
+                                    </md-card-actions>
+                                </md-ripple>
+                            </md-card>
+
+
+                        </md-step>
+                    </md-steppers>
+
+
+
+                    <md-card id="console">
+                        <md-card-header>
+                            <div class="md-title">Console</div>
+                        </md-card-header>
+
+                        <md-card-content>
+
+                            <log-entry v-for="l in log" :item="l" :key="l.id"></log-entry>
+
+                        </md-card-content>
+
+                        <md-card-actions>
+                            <md-button v-on:click="refreshLog">Refresh</md-button>
+                        </md-card-actions>
+                    </md-card>
+                    <md-progress-bar id="progress" class="md-accent" v-bind:md-mode="progressMode"></md-progress-bar>
+
+                </div>
+
+                <!-- DEMO -->
+                <div v-if="mode == 'demo'">
+                    <md-autocomplete v-model="value" :md-options="searchResults" @md-changed="searchAddr" @md-selected="selectAddr">
+                        <label>Address search (Lucene)</label>
+                        <template slot="md-autocomplete-item" slot-scope="{ item }">{{ item.value }}</template>
+                    </md-autocomplete>
+                    <md-card class="spacerV">
+                        <md-card-header>
+                            <div class="md-title">Result details</div>
+                        </md-card-header>
+
+                        <md-card-content>
+                            <pre>
+                            {{ searchDetails }}
+                            </pre>
+                        </md-card-content>
+                    </md-card>
+                </div>
+
+                <!-- SETTINGS -->
+                <div v-if="mode == 'sett'">
+                    <md-card class="md-accent" md-with-hover>
+                        <md-card-content>
+                            Warning: Be careful when modifying settings, you can break stuff! Also you can configure the server URL and key in the setup.
+                        </md-card-content>
+                    </md-card>
+                    <div v-if="config.length == 0" class="centerText spacerV">
+                        <md-button class="md-raised md-primary" v-on:click="getConfig" >
+                            Get current config 
+                        </md-button>
+                    </div>
+
+                    <div v-if="config.length > 0" class="spacerV">
+                        dffd
+                    </div>
+
+                </div>
+            </md-app-content>
+        </md-app>
+    </div>
+</div>
+
+<script src="https://unpkg.com/vue"></script>
+<script src="https://unpkg.com/vue-material@beta"></script>
+<script src="./js/app.js"></script>
+</body>
 </html>

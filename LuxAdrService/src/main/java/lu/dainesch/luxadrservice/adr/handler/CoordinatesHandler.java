@@ -23,12 +23,10 @@ public class CoordinatesHandler {
 
     @Inject
     private BuildingHandler buildHand;
-    
-    public boolean hasCoordinates() {
-        return !em.createNamedQuery("coordinates.all", Coordinates.class)
-                .setMaxResults(1)
-                .getResultList()
-                .isEmpty();
+
+    public Long getCoordCount() {
+        return em.createNamedQuery("coordinates.count", Long.class).getSingleResult();
+
     }
 
     @Asynchronous

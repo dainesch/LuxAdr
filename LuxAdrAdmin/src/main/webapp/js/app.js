@@ -5,7 +5,7 @@ var CONF = {
 };
 var MODES = {
     FIRST: {title: "First time setup", key: "first"},
-    DEMO: {title: "Normal API demo", key: "demo"},
+    DEMO: {title: "Public API demo", key: "demo"},
     SETTINGS: {title: "Settings", key: "sett"}
 };
 
@@ -56,17 +56,21 @@ new Vue({
         progressMode: "determinate",
         testConText: "Test",
         log: [],
+        serverStatus: {},
         working: false,
         config: [],
         steps: {zero: false, first: false, second: false, third: false, fourth: false},
         //
         corrId: 0,
         searchResults: [],
-        value: ''
+        value: '',
+        searchDetails: ""
     },
     created: function () {
         setInterval(this.refreshLog, 10000);
         this.refreshLog();
+        setInterval(this.refreshStatus, 10000);
+        this.refreshStatus();
     },
     methods: {
         page: function (p) {
@@ -75,12 +79,22 @@ new Vue({
         },
         toFirst: function () {
             this.page(MODES.FIRST);
+            this.$refs.firstMenu.className = 'md-selected';
+            this.$refs.demoMenu.className = '';
+            this.$refs.settMenu.className = '';
         },
         toDemo: function () {
             this.page(MODES.DEMO);
+            this.$refs.firstMenu.className = '';
+            this.$refs.demoMenu.className = 'md-selected';
+            this.$refs.settMenu.className = '';
+
         },
         toSett: function () {
             this.page(MODES.SETTINGS);
+            this.$refs.firstMenu.className = '';
+            this.$refs.demoMenu.className = '';
+            this.$refs.settMenu.className = 'md-selected';
         },
         ping: function () {
             if (this.working) {
@@ -130,6 +144,19 @@ new Vue({
                 return response.json();
             }).then(function (l) {
                 _this._data.log = l;
+            });
+        },
+        refreshStatus: function () {
+            var _this = this;
+            fetch(_this.url + '/admin/api/config/status', {
+                headers: {
+                    'AccessKey': _this.key
+                },
+                mode: "cors"
+            }).then(function (response) {
+                return response.json();
+            }).then(function (l) {
+                _this._data.serverStatus = l;
             });
         },
         doAction: function (action) {
@@ -223,9 +250,9 @@ new Vue({
         // demo
         searchAddr: function (text) {
             this.searchResults = new Promise(resolve => {
-                
+
                 this.corrId++;
-                
+
                 var _this = this;
                 fetch(_this.url + '/api/v1/search', {
                     method: "POST",
@@ -239,13 +266,13 @@ new Vue({
                         value: text
                     })
                 }).then(function (response) {
-                    
+
                     if (response.ok) {
-                         return response.json();
+                        return response.json();
                     }
                     resolve([]);
-                }).then( function (res) {
-                    
+                }).then(function (res) {
+
                     if (_this.corrId === res.corrId) {
                         resolve(res.results);
                     }
@@ -254,10 +281,24 @@ new Vue({
                     resolve([]);
                 });
 
-            })
+            });
         },
         selectAddr: function (item) {
             this.value = item.value;
+            this.getBuilding(item.buildingId);
+        },
+        getBuilding: function (id) {
+            var _this = this;
+            fetch(_this.url + '/api/v1/building/'+id, {
+                headers: {
+                    'AccessKey': _this.key
+                },
+                mode: "cors"
+            }).then(function (response) {
+                return response.json();
+            }).then(function (l) {
+                _this._data.searchDetails =  JSON.stringify(l, null, '\t');
+            });
         }
     }
 });

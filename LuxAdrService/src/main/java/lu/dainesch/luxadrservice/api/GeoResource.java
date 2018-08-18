@@ -111,7 +111,7 @@ public class GeoResource {
             if (!lucene.isEnabled()) {
                 throw new WebApplicationException("Trying to use lucene search while lucene not available", Response.Status.SERVICE_UNAVAILABLE);
             }
-            if (!lucene.hasData()) {
+            if (lucene.indexCount() <= 0) {
                 throw new WebApplicationException("Lucene has not yet indexed data", Response.Status.SERVICE_UNAVAILABLE);
             }
         }

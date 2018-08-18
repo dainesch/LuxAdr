@@ -227,15 +227,15 @@ public class LuceneSingleton {
         return enabled;
     }
 
-    public boolean hasData() {
+    public int indexCount() {
         if (!isEnabled()) {
-            return false;
+            return 0;
         }
         try {
-            return getReader().numDocs() > 0;
+            return getReader().numDocs();
         } catch (IOException ex) {
-            LOG.error("Error checkng index status", ex);
-            return false;
+            // ignore
+            return 0;
         }
     }
 
