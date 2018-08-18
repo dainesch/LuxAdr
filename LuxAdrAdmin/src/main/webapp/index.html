@@ -202,19 +202,32 @@
 
                 <!-- DEMO -->
                 <div v-if="mode == 'demo'">
-                    <md-autocomplete v-model="value" :md-options="searchResults" @md-changed="searchAddr" @md-selected="selectAddr">
-                        <label>Address search (Lucene)</label>
-                        <template slot="md-autocomplete-item" slot-scope="{ item }">{{ item.value }}</template>
-                    </md-autocomplete>
+
+
                     <md-card class="spacerV">
                         <md-card-header>
-                            <div class="md-title">Result details</div>
+                            <div class="md-title">Public API doc and test</div>
                         </md-card-header>
 
-                        <md-card-content>
-                            <pre>
-                            {{ searchDetails }}
-                            </pre>
+                        <md-card-content>                    
+                            The publicly accessible API is well documented and includes possibilities to test out each
+                            resource. Just have a look:
+                            <div class="spacerV centerText">
+                                <md-button v-bind:href="url" target="_blank" class="md-raised md-accent">Public API</md-button>
+                            </div>
+                        </md-card-content>
+                    </md-card>
+                    <md-card class="spacerV">
+                        <md-card-header>
+                            <div class="md-title">Lucence and public api test</div>
+                        </md-card-header>
+
+                        <md-card-content>                    
+                            <md-autocomplete v-model="value" :md-options="searchResults" @md-changed="searchAddr" @md-selected="selectAddr">
+                                <label>Address search (Lucene)</label>
+                                <template slot="md-autocomplete-item" slot-scope="{ item }">{{ item.value }}</template>
+                            </md-autocomplete>
+                            <pre>{{ searchDetails }}</pre>
                         </md-card-content>
                     </md-card>
                 </div>
@@ -233,7 +246,21 @@
                     </div>
 
                     <div v-if="config.length > 0" class="spacerV">
-                        dffd
+                        <md-card v-for="c in config" class="spacerV10">
+                            <md-card-header>
+                                {{c.type}}
+                            </md-card-header>
+                            <md-card-content>
+                                <md-field>
+                                    <md-input v-model="c.value"></md-input>
+                                </md-field>
+                            </md-card-content>
+                        </md-card>
+                        <div class="spacerV centerText">
+                            <md-button class="md-raised md-primary" v-on:click="writeConfig" >
+                                Save config
+                            </md-button>
+                        </div>
                     </div>
 
                 </div>
