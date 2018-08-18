@@ -13,7 +13,7 @@ import lu.dainesch.luxadrservice.adr.entity.Locality;
 import lu.dainesch.luxadrservice.adr.entity.PostalCode;
 import lu.dainesch.luxadrservice.adr.entity.Street;
 import lu.dainesch.luxadrdto.SearchRequest;
-import lu.dainesch.luxadrservice.base.Import;
+import lu.dainesch.luxadrservice.base.AppProcess;
 import lu.dainesch.luxadrservice.input.FixedParser;
 
 @Stateless
@@ -66,11 +66,11 @@ public class LocalityHandler extends ImportedEntityHandler<Locality> {
         }
     }
 
-    public Locality createOrUpdate(Locality loc, Import imp) {
+    public Locality createOrUpdate(Locality loc, AppProcess proc) {
         Locality ret = getByNumber(loc.getNumber());
         if (ret == null) {
             ret = new Locality();
-            ret.setSince(imp);
+            ret.setSince(proc);
         }
         ret.setActive(true);
         ret.setNumber(loc.getNumber());
@@ -82,7 +82,7 @@ public class LocalityHandler extends ImportedEntityHandler<Locality> {
         ret.getCommune().getLocalities().add(ret);
 
         ret.setUntil(null);
-        ret.setCurrent(imp);
+        ret.setCurrent(proc);
 
         if (ret.getId() == null) {
             em.persist(ret);
@@ -92,7 +92,7 @@ public class LocalityHandler extends ImportedEntityHandler<Locality> {
 
     @Asynchronous
     @Override
-    public Future<Boolean> importLine(FixedParser.ParsedLine line, Import currentImport) {
+    public Future<Boolean> importLine(FixedParser.ParsedLine line, AppProcess currentProcess) {
 
         Locality loc = new Locality();
         loc.setNumber(line.getInteger(0));
@@ -104,7 +104,7 @@ public class LocalityHandler extends ImportedEntityHandler<Locality> {
 
         Date valid = line.getDate(5);
         if (valid == null || valid.after(new Date())) {
-            createOrUpdate(loc, currentImport);
+            createOrUpdate(loc, currentProcess);
             return new AsyncResult<>(true);
         }
         return new AsyncResult<>(false);

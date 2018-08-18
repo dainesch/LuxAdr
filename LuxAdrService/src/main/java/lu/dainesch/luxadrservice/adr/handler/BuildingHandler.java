@@ -17,7 +17,7 @@ import lu.dainesch.luxadrdto.entity.PostCodeType;
 import lu.dainesch.luxadrservice.GeoUtil;
 import lu.dainesch.luxadrservice.adr.entity.Building;
 import lu.dainesch.luxadrservice.adr.entity.HouseNumber;
-import lu.dainesch.luxadrservice.base.Import;
+import lu.dainesch.luxadrservice.base.AppProcess;
 import lu.dainesch.luxadrservice.input.FixedParser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -115,11 +115,11 @@ public class BuildingHandler extends ImportedEntityHandler<Building> {
 
     }
 
-    public Building createOrUpdate(Building bui, Import imp) {
+    public Building createOrUpdate(Building bui, AppProcess proc) {
         Building ret = getByNumber(bui.getNumber());
         if (ret == null) {
             ret = new Building();
-            ret.setSince(imp);
+            ret.setSince(proc);
         }
         ret.setActive(true);
         ret.setNumber(bui.getNumber());
@@ -149,7 +149,7 @@ public class BuildingHandler extends ImportedEntityHandler<Building> {
         }
 
         ret.setUntil(null);
-        ret.setCurrent(imp);
+        ret.setCurrent(proc);
 
         if (ret.getId() == null) {
             em.persist(ret);
@@ -159,7 +159,7 @@ public class BuildingHandler extends ImportedEntityHandler<Building> {
 
     @Asynchronous
     @Override
-    public Future<Boolean> importLine(FixedParser.ParsedLine line, Import currentImport) {
+    public Future<Boolean> importLine(FixedParser.ParsedLine line, AppProcess currentProc) {
 
         Building bui = new Building();
         bui.setNumber(line.getInteger(0));
@@ -174,7 +174,7 @@ public class BuildingHandler extends ImportedEntityHandler<Building> {
                 && (valid == null || valid.after(new Date()))) {
 
             setNumbers(bui, line.getInteger(1), line.getString(2));
-            createOrUpdate(bui, currentImport);
+            createOrUpdate(bui, currentProc);
 
             return new AsyncResult<>(true);
         }

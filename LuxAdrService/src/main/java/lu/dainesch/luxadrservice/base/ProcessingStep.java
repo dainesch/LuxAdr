@@ -2,7 +2,7 @@ package lu.dainesch.luxadrservice.base;
 
 import java.util.Comparator;
 
-public enum ImportStep {
+public enum ProcessingStep {
     POSTALCODE(1, "CODEPT", "postcode", false),
     DISTRICT(2, "DISTRICT", "district", false),
     CANTON(3, "CANTON", "canton", false),
@@ -15,14 +15,16 @@ public enum ImportStep {
     BUILDING(10, "IMMEUBLE", "building", false),
     BUILDING_DES(11, "IMMDESIG", "building name", true),
     //
-    GEODATA(12, "addresses.geojson", "geodata", false);
+    GEODATA(20, "addresses.geojson", "geodata", false),
+    //
+    INDEXLUCENE(30, "", "lucene index", false);
 
     private final int order;
     private final String file;
     private final String stepName;
     private final boolean alt;
 
-    ImportStep(int order, String file, String stepName, boolean alt) {
+    ProcessingStep(int order, String file, String stepName, boolean alt) {
         this.order = order;
         this.file = file;
         this.stepName = stepName;
@@ -45,12 +47,12 @@ public enum ImportStep {
         return alt;
     }
 
-    public static Comparator<ImportStep> comparator() {
+    public static Comparator<ProcessingStep> comparator() {
         return (o1, o2) -> o1.order - o2.order;
     }
 
-    public static ImportStep getStepFromFile(String file) {
-        for (ImportStep s : values()) {
+    public static ProcessingStep getStepFromFile(String file) {
+        for (ProcessingStep s : values()) {
             if (s.getFile().equalsIgnoreCase(file)) {
                 return s;
             }

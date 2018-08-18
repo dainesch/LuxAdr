@@ -27,7 +27,7 @@ import lu.dainesch.luxadrservice.base.ImportedEntity;
 @Table(name = "STREET")
 @Cacheable
 @NamedQueries({
-    @NamedQuery(name = "street.invalidate", query = "UPDATE Street SET active = false, until = :imp where current != :imp")
+    @NamedQuery(name = "street.invalidate", query = "UPDATE Street SET active = false, until = :proc where current != :proc")
     ,
     @NamedQuery(name = "street.by.num", query = "SELECT s from Street s where s.number = :num")
     ,

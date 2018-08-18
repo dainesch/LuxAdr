@@ -1,6 +1,6 @@
 package lu.dainesch.luxadrservice.admin;
 
-import lu.dainesch.luxadrservice.base.ImportStep;
+import lu.dainesch.luxadrservice.base.ProcessingStep;
 import java.io.IOException;
 import java.util.Scanner;
 import javax.inject.Inject;
@@ -37,7 +37,7 @@ public class AdminFileServlet extends HttpServlet {
             } else if ("GEO".equals(sType)) {
                 impServ.importGeodata(file.getInputStream());
             } else {
-                ImportStep type = ImportStep.valueOf(sType);
+                ProcessingStep type = ProcessingStep.valueOf(sType);
                 impServ.update(null, type, file.getInputStream());
             }
 

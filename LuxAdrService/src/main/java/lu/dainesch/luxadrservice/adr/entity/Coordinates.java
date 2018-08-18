@@ -9,6 +9,8 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.TableGenerator;
@@ -17,6 +19,9 @@ import lu.dainesch.luxadrdto.entity.CoordinateDTO;
 @Entity
 @Table(name = "COORDINATES")
 @Cacheable
+@NamedQueries({
+    @NamedQuery(name = "coordinates.all", query = "Select c from Coordinates c")
+})
 public class Coordinates implements Serializable {
 
     @Id

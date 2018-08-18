@@ -7,7 +7,7 @@ import javax.ejb.Stateless;
 import javax.inject.Inject;
 import javax.persistence.NoResultException;
 import lu.dainesch.luxadrservice.adr.entity.Canton;
-import lu.dainesch.luxadrservice.base.Import;
+import lu.dainesch.luxadrservice.base.AppProcess;
 import lu.dainesch.luxadrservice.input.FixedParser;
 
 @Stateless
@@ -35,11 +35,11 @@ public class CantonHandler extends ImportedEntityHandler<Canton> {
         }
     }
 
-    public Canton createOrUpdate(Canton can, Import imp) {
+    public Canton createOrUpdate(Canton can, AppProcess proc) {
         Canton ret = getByCode(can.getCode());
         if (ret == null) {
             ret = new Canton();
-            ret.setSince(imp);
+            ret.setSince(proc);
         }
         ret.setActive(true);
         ret.setCode(can.getCode());
@@ -49,7 +49,7 @@ public class CantonHandler extends ImportedEntityHandler<Canton> {
         ret.getDistrict().getCantons().add(ret);
 
         ret.setUntil(null);
-        ret.setCurrent(imp);
+        ret.setCurrent(proc);
 
         if (ret.getId() == null) {
             em.persist(ret);
@@ -59,14 +59,14 @@ public class CantonHandler extends ImportedEntityHandler<Canton> {
 
     @Asynchronous
     @Override
-    public Future<Boolean> importLine(FixedParser.ParsedLine line, Import currentImport) {
+    public Future<Boolean> importLine(FixedParser.ParsedLine line, AppProcess currentProc) {
 
         Canton cant = new Canton();
         cant.setCode(line.getInteger(0));
         cant.setName(line.getString(1));
         cant.setDistrict(distHand.getByCode(line.getString(3)));
 
-        createOrUpdate(cant, currentImport);
+        createOrUpdate(cant, currentProc);
         return new AsyncResult<>(true);
 
     }

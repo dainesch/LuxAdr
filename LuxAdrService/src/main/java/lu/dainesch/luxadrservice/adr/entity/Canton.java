@@ -22,7 +22,7 @@ import lu.dainesch.luxadrservice.base.ImportedEntity;
 @Table(name = "CANTON")
 @Cacheable
 @NamedQueries({
-    @NamedQuery(name = "canton.invalidate", query = "UPDATE Canton SET active = false, until = :imp where current != :imp")
+    @NamedQuery(name = "canton.invalidate", query = "UPDATE Canton SET active = false, until = :proc where current != :proc")
     ,
     @NamedQuery(name = "canton.by.code", query = "SELECT c from Canton c where c.code = :code")
 })

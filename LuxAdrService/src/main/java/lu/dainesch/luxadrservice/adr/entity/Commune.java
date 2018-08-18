@@ -27,7 +27,7 @@ import lu.dainesch.luxadrservice.base.ImportedEntity;
 })
 @Cacheable
 @NamedQueries({
-    @NamedQuery(name = "commune.invalidate", query = "UPDATE Commune SET active = false, until = :imp where current != :imp")
+    @NamedQuery(name = "commune.invalidate", query = "UPDATE Commune SET active = false, until = :proc where current != :proc")
     ,
     @NamedQuery(name = "commune.by.canton.code", query = "SELECT c FROM Commune c WHERE c.code = :code AND c.canton = :can")
 })

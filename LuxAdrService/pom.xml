@@ -75,6 +75,11 @@
             <groupId>io.swagger.core.v3</groupId>
             <artifactId>swagger-jaxrs2-servlet-initializer</artifactId>
             <version>${swagger.version}</version>
+        </dependency>        
+        <dependency>
+            <groupId>io.swagger.core.v3</groupId>
+            <artifactId>swagger-jaxrs2</artifactId>
+            <version>${swagger.version}</version>
         </dependency>
         <!-- lucence search -->
         <dependency>

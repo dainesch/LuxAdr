@@ -20,7 +20,7 @@ import lu.dainesch.luxadrservice.base.ImportedEntity;
 @Table(name = "DISTRICT")
 @Cacheable
 @NamedQueries({
-    @NamedQuery(name = "district.invalidate", query = "UPDATE District SET active = false, until = :imp where current != :imp")
+    @NamedQuery(name = "district.invalidate", query = "UPDATE District SET active = false, until = :proc where current != :proc")
     ,
     @NamedQuery(name = "district.by.code", query = "SELECT d from District d where d.code = :code")
 })

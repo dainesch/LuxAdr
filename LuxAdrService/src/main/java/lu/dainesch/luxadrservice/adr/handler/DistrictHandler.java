@@ -6,7 +6,7 @@ import javax.ejb.Asynchronous;
 import javax.ejb.Stateless;
 import javax.persistence.NoResultException;
 import lu.dainesch.luxadrservice.adr.entity.District;
-import lu.dainesch.luxadrservice.base.Import;
+import lu.dainesch.luxadrservice.base.AppProcess;
 import lu.dainesch.luxadrservice.input.FixedParser;
 
 @Stateless
@@ -31,18 +31,18 @@ public class DistrictHandler extends ImportedEntityHandler<District> {
         }
     }
 
-    public District createOrUpdate(District distr, Import imp) {
+    public District createOrUpdate(District distr, AppProcess proc) {
         District ret = getByCode(distr.getCode());
         if (ret == null) {
             ret = new District();
-            ret.setSince(imp);
+            ret.setSince(proc);
         }
         ret.setActive(true);
         ret.setCode(distr.getCode());
         ret.setName(distr.getName());
 
         ret.setUntil(null);
-        ret.setCurrent(imp);
+        ret.setCurrent(proc);
 
         if (ret.getId() == null) {
             em.persist(ret);
@@ -52,13 +52,13 @@ public class DistrictHandler extends ImportedEntityHandler<District> {
 
     @Asynchronous
     @Override
-    public Future<Boolean> importLine(FixedParser.ParsedLine line, Import currentImport) {
+    public Future<Boolean> importLine(FixedParser.ParsedLine line, AppProcess currentProcess) {
 
         District dist = new District();
         dist.setCode(line.getString(0));
         dist.setName(line.getString(1));
 
-        createOrUpdate(dist, currentImport);
+        createOrUpdate(dist, currentProcess);
 
         return new AsyncResult<>(true);
 

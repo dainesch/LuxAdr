@@ -55,6 +55,10 @@ public class LuceneSingleton {
     @PostConstruct
     public synchronized void init() {
         enabled = confHand.getValue(ConfigType.LUCENE_ENABLED).getBoolean();
+        if (reader != null) {
+            // close first
+            shutDown();
+        }
         if (!enabled) {
             return;
         }
@@ -223,11 +227,16 @@ public class LuceneSingleton {
         return enabled;
     }
 
-    public boolean hasData() throws IOException {
+    public boolean hasData() {
         if (!isEnabled()) {
             return false;
         }
-        return getReader().numDocs() > 0;
+        try {
+            return getReader().numDocs() > 0;
+        } catch (IOException ex) {
+            LOG.error("Error checkng index status", ex);
+            return false;
+        }
     }
 
     @PreDestroy

@@ -16,7 +16,7 @@ public class AdminRestApplication extends Application {
         //
         resources.add(ActionsResource.class);
         resources.add(ConfigResource.class);
-        resources.add(ImportLogResource.class);
+        resources.add(ProcessLogResource.class);
 
     }
 

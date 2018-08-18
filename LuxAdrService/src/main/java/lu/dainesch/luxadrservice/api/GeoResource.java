@@ -1,7 +1,6 @@
 package lu.dainesch.luxadrservice.api;
 
 import io.swagger.v3.oas.annotations.Operation;
-import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
@@ -112,13 +111,8 @@ public class GeoResource {
             if (!lucene.isEnabled()) {
                 throw new WebApplicationException("Trying to use lucene search while lucene not available", Response.Status.SERVICE_UNAVAILABLE);
             }
-            try {
-                if (!lucene.hasData()) {
-                    throw new WebApplicationException("Lucene has not yet indexed data", Response.Status.SERVICE_UNAVAILABLE);
-                }
-            } catch (IOException ex) {
-                LOG.error("Error while checking lucene status", ex);
-                throw new WebApplicationException("Error while checking lucene status", Response.Status.INTERNAL_SERVER_ERROR);
+            if (!lucene.hasData()) {
+                throw new WebApplicationException("Lucene has not yet indexed data", Response.Status.SERVICE_UNAVAILABLE);
             }
         }
     }

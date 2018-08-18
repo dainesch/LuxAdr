@@ -21,21 +21,21 @@ import javax.persistence.TemporalType;
 
 @Entity
 @NamedQueries({
-    @NamedQuery(name = "import.latest",
-            query = "Select i from Import i "
-            + "where i.start = (Select MAX(i2.start) from Import i2)")
+    @NamedQuery(name = "process.latest",
+            query = "Select i from AppProcess i "
+            + "where i.start = (Select MAX(i2.start) from AppProcess i2)")
 })
-@Table(name = "IMPORT")
-public class Import implements Serializable {
+@Table(name = "APP_PROCESS")
+public class AppProcess implements Serializable {
 
     public static enum ImportState {
         RUNNING, COMPLETED, ERROR
     }
 
     @Id
-    @GeneratedValue(strategy = GenerationType.TABLE, generator = "Import")
-    @TableGenerator(name = "Import")
-    @Column(name = "IMP_ID")
+    @GeneratedValue(strategy = GenerationType.TABLE, generator = "AppProcess")
+    @TableGenerator(name = "AppProcess")
+    @Column(name = "PROC_ID")
     private Long id;
 
     @Column(name = "START_TIME", nullable = false)
@@ -50,8 +50,8 @@ public class Import implements Serializable {
     @Column(name = "IMP_STATE", nullable = false)
     private ImportState state;
 
-    @OneToMany(mappedBy = "imp")
-    private Set<ImportLog> logEntries = new HashSet<>();
+    @OneToMany(mappedBy = "process")
+    private Set<ProcessingLog> logEntries = new HashSet<>();
 
     public Long getId() {
         return id;
@@ -85,11 +85,11 @@ public class Import implements Serializable {
         this.state = state;
     }
 
-    public Set<ImportLog> getLogEntries() {
+    public Set<ProcessingLog> getLogEntries() {
         return logEntries;
     }
 
-    public void setLogEntries(Set<ImportLog> logEntries) {
+    public void setLogEntries(Set<ProcessingLog> logEntries) {
         this.logEntries = logEntries;
     }
 
@@ -103,10 +103,10 @@ public class Import implements Serializable {
     @Override
     public boolean equals(Object object) {
         // TODO: Warning - this method won't work in the case the id fields are not set
-        if (!(object instanceof Import)) {
+        if (!(object instanceof AppProcess)) {
             return false;
         }
-        Import other = (Import) object;
+        AppProcess other = (AppProcess) object;
         if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
             return false;
         }

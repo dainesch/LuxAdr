@@ -28,7 +28,7 @@ import lu.dainesch.luxadrservice.base.ImportedEntity;
 @Table(name = "BUILDING")
 @Cacheable
 @NamedQueries({
-    @NamedQuery(name = "building.invalidate", query = "UPDATE Building SET active = false, until = :imp where current != :imp")
+    @NamedQuery(name = "building.invalidate", query = "UPDATE Building SET active = false, until = :proc where current != :proc")
     ,
     @NamedQuery(name = "building.by.num", query = "SELECT b from Building b where b.number = :num")
     ,

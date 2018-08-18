@@ -5,7 +5,7 @@ public enum ConfigType {
     //
     CORS_ORIGIN("*", true),
     //
-    ADMIN_ACCESS_CHECK("true", false),
+    ADMIN_ACCESS_CHECK("false", true),
     ADMIN_ACCESS_KEY("ufnDMuLS7dOO51JlAtuSoszHxl0Wico4sPqR96FiNdf3reLClQNp6QFhIVPbS6Vi", true),
     //
     BATCH_SIZE("1000", true),

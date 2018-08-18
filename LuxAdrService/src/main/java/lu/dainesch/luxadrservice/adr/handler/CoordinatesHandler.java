@@ -23,13 +23,20 @@ public class CoordinatesHandler {
 
     @Inject
     private BuildingHandler buildHand;
+    
+    public boolean hasCoordinates() {
+        return !em.createNamedQuery("coordinates.all", Coordinates.class)
+                .setMaxResults(1)
+                .getResultList()
+                .isEmpty();
+    }
 
     @Asynchronous
-    public Future<Boolean> importCoords(GeoParser.CoordImp imp) {
+    public Future<Boolean> importCoords(GeoParser.CoordImp coord) {
 
-        Building build = buildHand.getByNumber(imp.getBuildingId());
+        Building build = buildHand.getByNumber(coord.getBuildingId());
         if (build == null) {
-            LOG.warn("No match found for coordinates " + imp);
+            LOG.warn("No match found for coordinates " + coord);
             return new AsyncResult<>(false);
         }
         Coordinates coords = build.getCoordinates();
@@ -39,8 +46,8 @@ public class CoordinatesHandler {
             build.setCoordinates(coords);
         }
 
-        coords.setLatitude(imp.getLatitude());
-        coords.setLongitude(imp.getLongitude());
+        coords.setLatitude(coord.getLatitude());
+        coords.setLongitude(coord.getLongitude());
 
         if (coords.getId() == null) {
             em.persist(build);

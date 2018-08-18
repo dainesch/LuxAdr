@@ -27,7 +27,7 @@ import lu.dainesch.luxadrservice.base.ImportedEntity;
 @Table(name = "LOCALITY")
 @Cacheable
 @NamedQueries({
-    @NamedQuery(name = "locality.invalidate", query = "UPDATE Locality SET active = false, until = :imp where current != :imp")
+    @NamedQuery(name = "locality.invalidate", query = "UPDATE Locality SET active = false, until = :proc where current != :proc")
     ,
     @NamedQuery(name = "locality.by.number", query = "SELECT l from Locality l where l.number = :num")
     ,

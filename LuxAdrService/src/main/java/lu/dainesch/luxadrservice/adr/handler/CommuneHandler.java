@@ -8,7 +8,7 @@ import javax.inject.Inject;
 import javax.persistence.NoResultException;
 import lu.dainesch.luxadrservice.adr.entity.Canton;
 import lu.dainesch.luxadrservice.adr.entity.Commune;
-import lu.dainesch.luxadrservice.base.Import;
+import lu.dainesch.luxadrservice.base.AppProcess;
 import lu.dainesch.luxadrservice.input.FixedParser;
 
 @Stateless
@@ -37,11 +37,11 @@ public class CommuneHandler extends ImportedEntityHandler<Commune> {
         }
     }
 
-    public Commune createOrUpdate(Commune comm, Import imp) {
+    public Commune createOrUpdate(Commune comm, AppProcess proc) {
         Commune ret = getByCantonCode(comm.getCanton(), comm.getCode());
         if (ret == null) {
             ret = new Commune();
-            ret.setSince(imp);
+            ret.setSince(proc);
         }
         ret.setActive(true);
         ret.setCode(comm.getCode());
@@ -51,7 +51,7 @@ public class CommuneHandler extends ImportedEntityHandler<Commune> {
         ret.getCanton().getCommunes().add(ret);
 
         ret.setUntil(null);
-        ret.setCurrent(imp);
+        ret.setCurrent(proc);
 
         if (ret.getId() == null) {
             em.persist(ret);
@@ -61,14 +61,14 @@ public class CommuneHandler extends ImportedEntityHandler<Commune> {
 
     @Asynchronous
     @Override
-    public Future<Boolean> importLine(FixedParser.ParsedLine line, Import currentImport) {
+    public Future<Boolean> importLine(FixedParser.ParsedLine line, AppProcess currentProcess) {
 
         Commune comm = new Commune();
         comm.setCode(line.getInteger(0));
         comm.setName(line.getString(1));
         comm.setCanton(canHand.getByCode(line.getInteger(4)));
 
-        createOrUpdate(comm, currentImport);
+        createOrUpdate(comm, currentProcess);
 
         return new AsyncResult<>(true);
 

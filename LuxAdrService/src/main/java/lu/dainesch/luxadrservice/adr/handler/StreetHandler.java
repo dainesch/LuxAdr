@@ -11,11 +11,10 @@ import javax.inject.Inject;
 import javax.persistence.NoResultException;
 import lu.dainesch.luxadrservice.adr.entity.AlternateName;
 import lu.dainesch.luxadrservice.adr.entity.HouseNumber;
-import lu.dainesch.luxadrservice.adr.entity.Locality;
 import lu.dainesch.luxadrservice.adr.entity.PostalCode;
 import lu.dainesch.luxadrservice.adr.entity.Street;
 import lu.dainesch.luxadrdto.SearchRequest;
-import lu.dainesch.luxadrservice.base.Import;
+import lu.dainesch.luxadrservice.base.AppProcess;
 import lu.dainesch.luxadrservice.input.FixedParser;
 
 @Stateless
@@ -68,11 +67,11 @@ public class StreetHandler extends ImportedEntityHandler<Street> {
         }
     }
 
-    public Street createOrUpdate(Street st, Import imp) {
+    public Street createOrUpdate(Street st, AppProcess proc) {
         Street ret = getByNumber(st.getNumber());
         if (ret == null) {
             ret = new Street();
-            ret.setSince(imp);
+            ret.setSince(proc);
         }
         ret.setActive(true);
         ret.setNumber(st.getNumber());
@@ -85,7 +84,7 @@ public class StreetHandler extends ImportedEntityHandler<Street> {
         ret.getLocality().getStreets().add(ret);
 
         ret.setUntil(null);
-        ret.setCurrent(imp);
+        ret.setCurrent(proc);
 
         if (ret.getId() == null) {
             em.persist(ret);
@@ -95,7 +94,7 @@ public class StreetHandler extends ImportedEntityHandler<Street> {
 
     @Asynchronous
     @Override
-    public Future<Boolean> importLine(FixedParser.ParsedLine line, Import currentImport) {
+    public Future<Boolean> importLine(FixedParser.ParsedLine line, AppProcess currentProcess) {
 
         Street s = new Street();
         s.setNumber(line.getInteger(0));
@@ -111,7 +110,7 @@ public class StreetHandler extends ImportedEntityHandler<Street> {
 
         Date valid = line.getDate(7);
         if (valid == null || valid.after(new Date())) {
-            createOrUpdate(s, currentImport);
+            createOrUpdate(s, currentProcess);
 
             return new AsyncResult<>(true);
 

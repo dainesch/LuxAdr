@@ -27,7 +27,7 @@
         <!-- swagger api doc -->
         <dependency>
             <groupId>io.swagger.core.v3</groupId>
-            <artifactId>swagger-jaxrs2</artifactId>
+            <artifactId>swagger-annotations</artifactId>
             <version>${swagger.version}</version>
         </dependency>
     </dependencies>

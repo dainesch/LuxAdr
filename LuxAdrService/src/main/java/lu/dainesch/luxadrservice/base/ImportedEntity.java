@@ -13,16 +13,16 @@ public class ImportedEntity implements Serializable {
     protected boolean active = true;
 
     @ManyToOne
-    @JoinColumn(name = "IMP_SINCE", nullable = false)
-    protected Import since;
+    @JoinColumn(name = "PROC_SINCE", nullable = false)
+    protected AppProcess since;
 
     @ManyToOne
-    @JoinColumn(name = "IMP_CURR", nullable = false)
-    protected Import current;
+    @JoinColumn(name = "PROC_CURR", nullable = false)
+    protected AppProcess current;
 
     @ManyToOne
-    @JoinColumn(name = "IMP_UNTIL")
-    protected Import until;
+    @JoinColumn(name = "PROC_UNTIL")
+    protected AppProcess until;
 
     public boolean isActive() {
         return active;
@@ -32,27 +32,27 @@ public class ImportedEntity implements Serializable {
         this.active = active;
     }
 
-    public Import getSince() {
+    public AppProcess getSince() {
         return since;
     }
 
-    public void setSince(Import since) {
+    public void setSince(AppProcess since) {
         this.since = since;
     }
 
-    public Import getUntil() {
+    public AppProcess getUntil() {
         return until;
     }
 
-    public void setUntil(Import until) {
+    public void setUntil(AppProcess until) {
         this.until = until;
     }
 
-    public Import getCurrent() {
+    public AppProcess getCurrent() {
         return current;
     }
 
-    public void setCurrent(Import current) {
+    public void setCurrent(AppProcess current) {
         this.current = current;
     }
 

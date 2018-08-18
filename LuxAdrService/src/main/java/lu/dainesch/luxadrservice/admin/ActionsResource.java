@@ -1,7 +1,5 @@
 package lu.dainesch.luxadrservice.admin;
 
-import java.math.BigDecimal;
-import java.util.logging.Level;
 import javax.inject.Inject;
 import javax.json.Json;
 import javax.json.JsonObject;
@@ -13,7 +11,6 @@ import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import lu.dainesch.luxadrservice.adr.BatchImportService;
-import lu.dainesch.luxadrservice.base.ConfigHandler;
 import lu.dainesch.luxadrservice.base.ImportException;
 import lu.dainesch.luxadrservice.search.SearchException;
 import lu.dainesch.luxadrservice.search.SearchService;

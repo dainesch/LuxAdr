@@ -10,7 +10,7 @@ import lu.dainesch.luxadrservice.adr.entity.PostalCode;
 import lu.dainesch.luxadrservice.adr.entity.Street;
 import lu.dainesch.luxadrdto.SearchRequest;
 import lu.dainesch.luxadrdto.entity.PostCodeType;
-import lu.dainesch.luxadrservice.base.Import;
+import lu.dainesch.luxadrservice.base.AppProcess;
 import lu.dainesch.luxadrservice.input.FixedParser;
 
 @Stateless
@@ -53,11 +53,11 @@ public class PostCodeHandler extends ImportedEntityHandler<PostalCode> {
                 .setMaxResults(req.getMaxResults()).getResultList();
     }
 
-    public PostalCode createOrUpdate(PostalCode code, Import imp) {
+    public PostalCode createOrUpdate(PostalCode code, AppProcess proc) {
         PostalCode ret = getByCode(code.getCode());
         if (ret == null) {
             ret = new PostalCode();
-            ret.setSince(imp);
+            ret.setSince(proc);
         }
         ret.setActive(true);
         ret.setCode(code.getCode());
@@ -67,7 +67,7 @@ public class PostCodeHandler extends ImportedEntityHandler<PostalCode> {
         ret.setType(code.getType());
 
         ret.setUntil(null);
-        ret.setCurrent(imp);
+        ret.setCurrent(proc);
 
         if (ret.getId() == null) {
             em.persist(ret);
@@ -77,7 +77,7 @@ public class PostCodeHandler extends ImportedEntityHandler<PostalCode> {
 
     @Asynchronous
     @Override
-    public Future<Boolean> importLine(FixedParser.ParsedLine line, Import currentImport) {
+    public Future<Boolean> importLine(FixedParser.ParsedLine line, AppProcess currentProcess) {
 
         PostalCode code = new PostalCode();
         code.setCode(line.getString(0));
@@ -86,7 +86,7 @@ public class PostCodeHandler extends ImportedEntityHandler<PostalCode> {
         code.setMinMailbox(line.getInteger(3));
         code.setMaxMailbox(line.getInteger(4));
 
-        createOrUpdate(code, currentImport);
+        createOrUpdate(code, currentProcess);
         return new AsyncResult<>(true);
     }
 

@@ -35,10 +35,10 @@ import lu.dainesch.luxadrservice.base.Config;
 import lu.dainesch.luxadrservice.base.ConfigHandler;
 import lu.dainesch.luxadrservice.base.ConfigType;
 import lu.dainesch.luxadrservice.base.ConfigValue;
-import lu.dainesch.luxadrservice.base.Import;
+import lu.dainesch.luxadrservice.base.AppProcess;
 import lu.dainesch.luxadrservice.base.ImportException;
-import lu.dainesch.luxadrservice.base.ImportHandler;
-import lu.dainesch.luxadrservice.base.ImportStep;
+import lu.dainesch.luxadrservice.base.ProcessHandler;
+import lu.dainesch.luxadrservice.base.ProcessingStep;
 import lu.dainesch.luxadrservice.input.FixedParser;
 import lu.dainesch.luxadrservice.input.GeoParser;
 import org.slf4j.Logger;
@@ -57,7 +57,7 @@ public class BatchImportService {
     private ConfigValue batchSize;
 
     @Inject
-    private ImportHandler impHand;
+    private ProcessHandler procHand;
     @Inject
     private StreetHandler streetHand;
     @Inject
@@ -136,7 +136,7 @@ public class BatchImportService {
     public void updateAll(InputStream in) throws ImportException {
 
         byte[] buff = new byte[4 * 1024];
-        Map<ImportStep, Path> fileMap = new HashMap<>();
+        Map<ProcessingStep, Path> fileMap = new HashMap<>();
         try {
             // map files contained in zip to steps to execute in order later
             try (ZipInputStream zin = new ZipInputStream(in)) {
@@ -145,7 +145,7 @@ public class BatchImportService {
                 while ((entry = zin.getNextEntry()) != null) {
                     LOG.info("Reading file " + entry.getName() + " from zip");
 
-                    ImportStep step = ImportStep.getStepFromFile(entry.getName());
+                    ProcessingStep step = ProcessingStep.getStepFromFile(entry.getName());
 
                     if (step != null) {
                         Path temp = Files.createTempFile(entry.getName(), "");
@@ -169,25 +169,25 @@ public class BatchImportService {
             }
 
             // fix order and start
-            List<ImportStep> steps = Arrays.asList(ImportStep.values());
-            Collections.sort(steps, ImportStep.comparator());
+            List<ProcessingStep> steps = Arrays.asList(ProcessingStep.values());
+            Collections.sort(steps, ProcessingStep.comparator());
 
-            Import currentImport = impHand.createNewImport();
+            AppProcess currentProcess = procHand.createNewProcess();
 
-            for (ImportStep step : steps) {
-                if (step == ImportStep.GEODATA) {
+            for (ProcessingStep step : steps) {
+                if (step.getOrder() > EXPECTED_FILES) {
                     continue;
                 }
                 try (InputStream stepIn = Files.newInputStream(fileMap.get(step))) {
 
-                    update(currentImport, step, stepIn);
+                    update(currentProcess, step, stepIn);
 
                 } catch (IOException ex) {
                     throw new ImportException("Error reading input from " + fileMap.get(step), ex);
                 }
             }
 
-            impHand.complete(currentImport);
+            procHand.complete(currentProcess);
 
         } finally {
             fileMap.entrySet().forEach(e -> {
@@ -201,7 +201,7 @@ public class BatchImportService {
 
     }
 
-    public void update(Import currentImport, ImportStep step, InputStream in) throws ImportException {
+    public void update(AppProcess currentProcess, ProcessingStep step, InputStream in) throws ImportException {
 
         ImportedEntityHandler objHand = getHandler(step);
         int[] format;
@@ -212,17 +212,17 @@ public class BatchImportService {
         }
 
         boolean grouped = true;
-        if (currentImport == null) {
-            currentImport = impHand.createNewImport();
+        if (currentProcess == null) {
+            currentProcess = procHand.createNewProcess();
             grouped = false;
         }
 
-        impHand.log(currentImport, step, "Starting step " + step.getStepName());
+        procHand.log(currentProcess, step, "Starting step " + step.getStepName());
 
         try (FixedParser parser = new FixedParser(in, format)) {
             if (!parser.hasNext()) {
                 LOG.warn("Empty file given as input, aborting");
-                impHand.log(currentImport, step, "Empty file given as input, aborting");
+                procHand.log(currentProcess, step, "Empty file given as input, aborting");
                 return;
             }
             int deleted = 0;
@@ -240,14 +240,14 @@ public class BatchImportService {
                 if (step.isAlt()) {
                     res = objHand.importAltName(parser.next());
                 } else {
-                    res = objHand.importLine(parser.next(), currentImport);
+                    res = objHand.importLine(parser.next(), currentProcess);
                 }
                 results.add(res);
 
                 sub++;
                 if (sub % batchSize.getInt() == 0) {
                     LOG.info("Submitted " + count + " " + step.getStepName());
-                    impHand.log(currentImport, step, "Submitted " + count + " " + step.getStepName());
+                    procHand.log(currentProcess, step, "Submitted " + count + " " + step.getStepName());
                     for (Future<Boolean> r : results) {
                         if (r.get()) {
                             count++;
@@ -255,7 +255,7 @@ public class BatchImportService {
                     }
                     results.clear();
                     LOG.info("Imported " + count + " " + step.getStepName());
-                    impHand.log(currentImport, step, "Imported " + count + " " + step.getStepName());
+                    procHand.log(currentProcess, step, "Imported " + count + " " + step.getStepName());
                 }
             }
 
@@ -267,25 +267,25 @@ public class BatchImportService {
             }
 
             if (!step.isAlt()) {
-                deleted = objHand.postprocess(currentImport);
+                deleted = objHand.postprocess(currentProcess);
             }
 
             LOG.info("Done! Imported " + count + " " + step.getStepName() + " and deleted " + deleted);
-            impHand.log(currentImport, step, "Done! Imported " + count + " " + step.getStepName() + " and deleted " + deleted);
+            procHand.log(currentProcess, step, "Done! Imported " + count + " " + step.getStepName() + " and deleted " + deleted);
 
             if (!grouped) {
-                impHand.complete(currentImport);
+                procHand.complete(currentProcess);
             }
 
         } catch (IOException | InterruptedException | ExecutionException ex) {
-            impHand.log(currentImport, step, "Error during step " + step.getStepName() + ": view log for more info");
-            impHand.error(currentImport);
+            procHand.log(currentProcess, step, "Error during step " + step.getStepName() + ": view log for more info");
+            procHand.error(currentProcess);
             throw new ImportException("Error during " + step.getStepName() + " import", ex);
         }
 
     }
 
-    private ImportedEntityHandler getHandler(ImportStep step) throws ImportException {
+    private ImportedEntityHandler getHandler(ProcessingStep step) throws ImportException {
         switch (step) {
             case BUILDING:
             case BUILDING_DES:
@@ -313,13 +313,13 @@ public class BatchImportService {
 
     public void importGeodata(InputStream in) throws ImportException {
 
-        Import currentImport = impHand.createNewImport();
+        AppProcess currentProcess = procHand.createNewProcess();
 
-        impHand.log(currentImport, ImportStep.GEODATA, "Starting step " + ImportStep.GEODATA.getStepName());
+        procHand.log(currentProcess, ProcessingStep.GEODATA, "Starting step " + ProcessingStep.GEODATA.getStepName());
 
         try (GeoParser parser = new GeoParser(in)) {
             if (!parser.hasNext()) {
-                impHand.log(currentImport, ImportStep.GEODATA, "Empty file given as input, aborting");
+                procHand.log(currentProcess, ProcessingStep.GEODATA, "Empty file given as input, aborting");
                 LOG.warn("Empty file given as input, aborting");
                 return;
             }
@@ -336,7 +336,7 @@ public class BatchImportService {
                 sub++;
                 if (sub % batchSize.getInt() == 0) {
                     LOG.info("Submitted " + count + " coordinates");
-                    impHand.log(currentImport, ImportStep.GEODATA, "Submitted " + count + " coordinates");
+                    procHand.log(currentProcess, ProcessingStep.GEODATA, "Submitted " + count + " coordinates");
                     for (Future<Boolean> r : results) {
                         if (r.get()) {
                             count++;
@@ -344,7 +344,7 @@ public class BatchImportService {
                     }
                     results.clear();
                     LOG.info("Imported " + count + " coordinates");
-                    impHand.log(currentImport, ImportStep.GEODATA, "Imported " + count + " coordinates");
+                    procHand.log(currentProcess, ProcessingStep.GEODATA, "Imported " + count + " coordinates");
                 }
             }
 
@@ -356,11 +356,11 @@ public class BatchImportService {
             }
 
             LOG.info("Done! Imported " + count + " coordinates ");
-            impHand.log(currentImport, ImportStep.GEODATA, "Done! Imported " + count + " coordinates ");
+            procHand.log(currentProcess, ProcessingStep.GEODATA, "Done! Imported " + count + " coordinates ");
 
         } catch (InterruptedException | ExecutionException ex) {
-            impHand.log(currentImport, ImportStep.GEODATA, "Error during step " + ImportStep.GEODATA.getStepName() + ": view log for more info");
-            impHand.error(currentImport);
+            procHand.log(currentProcess, ProcessingStep.GEODATA, "Error during step " + ProcessingStep.GEODATA.getStepName() + ": view log for more info");
+            procHand.error(currentProcess);
             throw new ImportException("Error during coordinates import", ex);
         }
     }

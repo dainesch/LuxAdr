@@ -27,17 +27,18 @@ import javax.xml.bind.annotation.XmlTransient;
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.FIELD)
 @NamedQueries({
-    @NamedQuery(name = "importlog.by.imp",
-            query = "Select l from ImportLog l "
-            + "where l.imp = :imp "
+    @NamedQuery(name = "processinglog.by.proc",
+            query = "Select l from ProcessingLog l "
+            + "where l.process = :proc "
             + "order by l.created desc")
 })
-@Table(name = "IMPORT_LOG")
-public class ImportLog implements Serializable {
+@Table(name = "PROCESS_LOG")
+public class ProcessingLog implements Serializable {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.TABLE, generator = "ImportLog")
-    @TableGenerator(name = "ImportLog")
+    @GeneratedValue(strategy = GenerationType.TABLE, generator = "ProcessingLog")
+    @TableGenerator(name = "ProcessingLog")
+    @Column(name = "LOG_ID")
     private Long id;
 
     @Column(name = "CREATED", nullable = false)
@@ -49,12 +50,12 @@ public class ImportLog implements Serializable {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "STEP")
-    private ImportStep step;
+    private ProcessingStep step;
 
     @ManyToOne
     @XmlTransient
-    @JoinColumn(name = "IMP_ID", nullable = false)
-    private Import imp;
+    @JoinColumn(name = "PROC_ID", nullable = false)
+    private AppProcess process;
 
     public Long getId() {
         return id;
@@ -80,19 +81,19 @@ public class ImportLog implements Serializable {
         this.log = log;
     }
 
-    public Import getImp() {
-        return imp;
+    public AppProcess getProcess() {
+        return process;
     }
 
-    public void setImp(Import imp) {
-        this.imp = imp;
+    public void setProcess(AppProcess proc) {
+        this.process = proc;
     }
 
-    public ImportStep getStep() {
+    public ProcessingStep getStep() {
         return step;
     }
 
-    public void setStep(ImportStep step) {
+    public void setStep(ProcessingStep step) {
         this.step = step;
     }
 
@@ -114,7 +115,7 @@ public class ImportLog implements Serializable {
         if (getClass() != obj.getClass()) {
             return false;
         }
-        final ImportLog other = (ImportLog) obj;
+        final ProcessingLog other = (ProcessingLog) obj;
         if (!Objects.equals(this.id, other.id)) {
             return false;
         }
