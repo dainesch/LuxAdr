@@ -10,6 +10,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.Index;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
@@ -19,7 +20,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 @Entity
-@Table(name = "HOUSENUMBER")
+@Table(name = "HOUSENUMBER", indexes = {
+    @Index(name = "IDX_HOUSENUMBER_BUIL_ID", columnList = "BUIL_ID")
+})
 @Cacheable
 public class HouseNumber implements Serializable, Comparable<HouseNumber> {
 

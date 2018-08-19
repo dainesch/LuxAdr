@@ -11,7 +11,11 @@ import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import lu.dainesch.luxadrservice.adr.BatchImportService;
+import lu.dainesch.luxadrservice.adr.handler.BuildingHandler;
+import lu.dainesch.luxadrservice.adr.handler.CoordinatesHandler;
 import lu.dainesch.luxadrservice.base.ImportException;
+import lu.dainesch.luxadrservice.base.ProcessHandler;
+import lu.dainesch.luxadrservice.base.ProcessingStep;
 import lu.dainesch.luxadrservice.search.SearchException;
 import lu.dainesch.luxadrservice.search.SearchService;
 import org.slf4j.Logger;
@@ -28,7 +32,9 @@ public class ActionsResource {
     private SearchService search;
     @Inject
     private BatchImportService importServ;
-    
+    @Inject
+    private ProcessHandler procHand;
+
     @Path("ping")
     @POST
     public JsonObject ping() {
@@ -38,6 +44,10 @@ public class ActionsResource {
     @Path("index")
     @POST
     public JsonObject index() {
+        if (procHand.getLastCompletedProcess(ProcessingStep.BUILDING) == null
+                || procHand.getLastCompletedProcess(ProcessingStep.GEODATA) == null) {
+            throw new WebApplicationException("Please import all data first", Response.Status.SERVICE_UNAVAILABLE);
+        }
         try {
             search.indexData();
         } catch (SearchException ex) {
@@ -80,6 +90,9 @@ public class ActionsResource {
     @Path("importGeo")
     @POST
     public JsonObject importGeoData() {
+        if (procHand.getLastCompletedProcess(ProcessingStep.BUILDING) == null) {
+            throw new WebApplicationException("Please import address data first", Response.Status.SERVICE_UNAVAILABLE);
+        }
         try {
             importServ.importGeoRemote();
         } catch (ImportException ex) {

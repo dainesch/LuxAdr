@@ -11,6 +11,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.Index;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
@@ -20,7 +21,11 @@ import javax.persistence.TableGenerator;
 import lu.dainesch.luxadrdto.entity.AlternateNameDTO;
 
 @Entity
-@Table(name = "ALT_NAME")
+@Table(name = "ALT_NAME", indexes = {
+    @Index(name = "IDX_ALT_NAME_LOC_ID", columnList = "LOC_ID")
+    ,
+    @Index(name = "IDX_ALT_NAME_LOC_ID", columnList = "STR_ID")
+})
 @Cacheable
 @NamedQueries({
     @NamedQuery(name = "alternatename.del.loc", query = "DELETE FROM AlternateName WHERE localiity != null")
@@ -96,16 +101,16 @@ public class AlternateName implements Serializable {
     public void setStreet(Street street) {
         this.street = street;
     }
-    
+
     public JsonObjectBuilder toJson() {
         JsonObjectBuilder ret = Json.createObjectBuilder();
-        if (lang!=null) {
+        if (lang != null) {
             ret.add("lang", lang);
         }
         ret.add("name", name);
         return ret;
     }
-    
+
     public AlternateNameDTO toDTO() {
         return new AlternateNameDTO(lang, name);
     }
@@ -146,7 +151,5 @@ public class AlternateName implements Serializable {
         }
         return true;
     }
-
-   
 
 }

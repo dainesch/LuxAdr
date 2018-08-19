@@ -7,8 +7,8 @@
         <title>LuxAdr Admin</title>
 
         <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700,400italic|Material+Icons">
-        <link rel="stylesheet" href="https://unpkg.com/vue-material@beta/dist/vue-material.min.css">
-        <link rel="stylesheet" href="https://unpkg.com/vue-material@beta/dist/theme/default.css">
+        <link rel="stylesheet" href="https://unpkg.com/vue-material@1.0.0-beta-10.2/dist/vue-material.min.css">
+        <link rel="stylesheet" href="https://unpkg.com/vue-material@1.0.0-beta-10.2/dist/theme/default.css">
 
         <link rel="stylesheet" href="./css/app.css">
     </head>
@@ -28,7 +28,11 @@
                         </md-toolbar>
 
                         <md-list>
-                            <md-list-item ref="firstMenu" class="md-selected" v-on:click="toFirst">
+                            <md-list-item ref="homeMenu" class="md-selected" v-on:click="toHome">
+                                <md-icon>home</md-icon>
+                                <span class="md-list-item-text">Home</span>
+                            </md-list-item>
+                            <md-list-item ref="firstMenu" v-on:click="toFirst">
                                 <md-icon>build</md-icon>
                                 <span class="md-list-item-text">Setup</span>
                             </md-list-item>
@@ -48,26 +52,86 @@
                         <md-list id="statusList" class="md-dense">
                             <md-list-item>
                                 <span class="md-list-item-text">Data items </span>
-                                <md-badge>{{ serverStatus.buildingCount }}</md-badge>
+                                <md-badge :md-content="serverStatus.buildingCount" class="md-primary md-square"></md-badge>
                             </md-list-item>
                             <md-list-item>
                                 <span class="md-list-item-text">Geo items </span>
-                                <md-badge>{{ serverStatus.coordCount }}</md-badge>
+                                <md-badge :md-content="serverStatus.coordCount" class="md-primary md-square"></md-badge>
                             </md-list-item>
                             <md-list-item>
                                 <span class="md-list-item-text">Indexed items </span>
-                                <md-badge>{{ serverStatus.indexCount }}</md-badge>
+                                <md-badge :md-content="serverStatus.indexCount" class="md-primary md-square"></md-badge>
                             </md-list-item>
                             <md-list-item>
                                 <span class="md-list-item-text">Rebuild required </span>
-                                <md-badge>{{ serverStatus.requiresRebuild }}</md-badge>
+                                <md-badge :md-content="serverStatus.requiresRebuild ? 'Yes':'No'" class="md-primary md-square"></md-badge>
                             </md-list-item>
                         </md-list>
                     </md-app-drawer>
 
                     <md-app-content>
 
-                        <!-- FIRST PAGE -->
+
+                        <!-- Home -->
+                        <div v-if="mode == 'home'">
+                            <div class="md-headline">About</div>
+                            <div>
+                                LuxAdr provides a state of the art API to access data related to all official addresses of Luxembourg. The data structure
+                                is closely related to the official data provided by <a href="https://data.public.lu/" target="_blank">data.public.lu</a> and
+                                can be kept up to date with ease. Among others you will have access to all:
+                            </div>
+                            <ul>
+                                <li>Localities</li>
+                                <li>Postcodes</li>
+                                <li>Streets</li>
+                                <li>House numbers (Buildings)</li>
+                                <li>Location data of the buildings</li>
+                            </ul>
+                            <div>
+                                Several search features are included and designed to be used, among others, from web pages. You will also have the possibility to
+                                search via location data. Additionally once imported, data will never be deleted, only deactivated, so if you make a reference to an 
+                                id it will be always be available for later use.
+                            </div>
+                            <div>
+                                On first use a data import has to be made using the first time setup. For later updates you can use it as well. Lets go ahead and use the provided first time setup wizard to get you started.
+                                
+                            </div>
+                            <div class="centerText spacerV">
+                                <md-button class="md-raised md-primary" v-on:click="toFirst">
+                                    First time setup
+                                </md-button>
+                            </div>
+
+
+                            <md-card class="spacerV">
+                                <md-card-header>
+                                    <div class="md-title">Service status</div>
+                                </md-card-header>
+
+                                <md-card-content>
+                                    <div class="md-layout">
+                                        <div class="md-layout-item centerText">
+                                            <md-icon class="md-size-3x">location_city</md-icon><br>
+                                            <span v-if="serverStatus.lastDataImport <= 0">Not imported</span>
+                                            <span v-if="serverStatus.lastDataImport > 0">Imported on {{ new Date(serverStatus.lastDataImport).toDateString()}}</span>
+                                        </div>
+                                        <div class="md-layout-item centerText">
+                                            <md-icon class="md-size-3x">location_on</md-icon><br>
+                                            <span v-if="serverStatus.lastGeoImport <= 0">Not imported</span>
+                                            <span v-if="serverStatus.lastGeoImport > 0">Imported on {{ new Date(serverStatus.lastGeoImport).toDateString()}}</span>
+                                        </div>
+                                        <div class="md-layout-item centerText">
+                                            <md-icon class="md-size-3x">search</md-icon><br>
+                                            <span v-if="serverStatus.lastIndexBuild <= 0">Not indexed</span>
+                                            <span v-if="serverStatus.lastIndexBuild > 0">Indexed on {{ new Date(serverStatus.lastIndexBuild).toDateString()}}</span>
+                                        </div>
+                                    </div>
+                                </md-card-content>
+
+                            </md-card>
+                        </div>
+
+                        <!-- FIRST TIME SETUP PAGE -->
                         <div v-if="mode == 'first'">
 
                             <md-steppers md-alternative>
@@ -101,7 +165,7 @@
                                 <md-step id="first" md-label="Import data" :md-done="steps.first">
                                     <div class="md-headline">Import address data</div>
                                     <div class="spacerV">
-                                        Now we need to populate the database using the data provided openly from <a href="https://data.public.lu/">data.public.lu</a>.
+                                        Now we need to populate the database using the data provided openly from <a href="https://data.public.lu/" target="_blank">data.public.lu</a>.
                                         LuxAdr will automatically download the required files and import them. <br>
                                         The process can take a while depending on your configuration so please be patient and follow the progress in the console bellow.
                                     </div>
@@ -118,12 +182,12 @@
                                 <md-step id="second" md-label="Import geo" :md-done="steps.second">
                                     <div class="md-headline">Import geo data</div>
                                     <div class="spacerV">
-                                        After having all the address data, it is time to import the corresponding geo data from <a href="https://data.public.lu/">data.public.lu</a>.
+                                        After having all the address data, it is time to import the corresponding geo data from <a href="https://data.public.lu/" target="_blank">data.public.lu</a>.
                                         LuxAdr will automatically download the required files and import them. <br>
                                         The process can take a while depending on your configuration so please be patient and follow the progress in the console bellow.
                                     </div>
                                     <div class="centerText spacerV">
-                                        <md-button v-if="working == false" class="md-raised md-primary" v-on:click="importGeoData" :disabled="serverStatus.buildingCount <= 0">
+                                        <md-button v-if="working == false" class="md-raised md-primary" v-on:click="importGeoData" :disabled="serverStatus.lastDataImport <= 0">
                                                    Start geo import
                                     </md-button>
                                     <md-progress-spinner v-if="working == true" class="md-accent" :md-diameter="30" md-mode="indeterminate"></md-progress-spinner>
@@ -138,7 +202,7 @@
                                     The process can take a while depending on your configuration so please be patient and follow the progress in the console bellow.
                                 </div>
                                 <div class="centerText spacerV">
-                                    <md-button v-if="working == false" class="md-raised md-primary" v-on:click="indexData" :disabled="serverStatus.coordCount <= 0">
+                                    <md-button v-if="working == false" class="md-raised md-primary" v-on:click="indexData" :disabled="serverStatus.lastGeoImport <= 0">
                                                Index data
                                 </md-button>
                                 <md-progress-spinner v-if="working == true" class="md-accent" :md-diameter="30" md-mode="indeterminate"></md-progress-spinner>
@@ -159,22 +223,23 @@
                             </div>
 
 
-                            <md-card md-with-hover class="spacerV">
-                                <md-ripple v-if="config.length > 0">
-                                    <md-card-content>
-                                        <md-field>
-                                            <label>Service Key</label>
-                                            <md-input v-model="key" disabled></md-input>
-                                        </md-field>
+                            <md-card class="spacerV" v-if="config.length > 0">
+                                <md-card-content class="centerText">
+
+                                    <span class="md-subheading">Service Key:</span><br> 
+                                    <span class="md-input"> {{ key }}</span>
+
+                                    <div class="spacerV">
                                         <md-switch v-model="secured" class="md-primary">API secured</md-switch>
-                                    </md-card-content>
+                                    </div>
 
-                                    <md-card-actions>
-                                        <md-button class="md-raised md-accent" v-on:click="saveSecure">Save</md-button>
-                                    </md-card-actions>
-                                </md-ripple>
+                                </md-card-content>
+
+                                <md-card-actions>
+                                    <md-button class="md-raised md-accent" v-on:click="saveSecure">Save</md-button>
+                                </md-card-actions>
+
                             </md-card>
-
 
                         </md-step>
                     </md-steppers>
@@ -246,7 +311,7 @@
                     </div>
 
                     <div v-if="config.length > 0" class="spacerV">
-                        <md-card v-for="c in config" class="spacerV10">
+                        <md-card v-for="c in config" :key="c.type" class="spacerV10">
                             <md-card-header>
                                 {{c.type}}
                             </md-card-header>
@@ -260,17 +325,24 @@
                             <md-button class="md-raised md-primary" v-on:click="writeConfig" >
                                 Save config
                             </md-button>
+
+
                         </div>
                     </div>
 
                 </div>
+
+                <md-snackbar md-position="center" :md-active.sync="settSaved">
+                    <span>Settings saved!</span>
+                </md-snackbar>
+
             </md-app-content>
         </md-app>
     </div>
 </div>
 
 <script src="https://unpkg.com/vue"></script>
-<script src="https://unpkg.com/vue-material@beta"></script>
+<script src="https://unpkg.com/vue-material@1.0.0-beta-10.2"></script>
 <script src="./js/app.js"></script>
 </body>
 </html>

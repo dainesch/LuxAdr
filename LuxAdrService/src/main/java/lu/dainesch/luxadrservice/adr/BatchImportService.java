@@ -357,6 +357,7 @@ public class BatchImportService {
 
             LOG.info("Done! Imported " + count + " coordinates ");
             procHand.log(currentProcess, ProcessingStep.GEODATA, "Done! Imported " + count + " coordinates ");
+            procHand.complete(currentProcess);
 
         } catch (InterruptedException | ExecutionException ex) {
             procHand.log(currentProcess, ProcessingStep.GEODATA, "Error during step " + ProcessingStep.GEODATA.getStepName() + ": view log for more info");

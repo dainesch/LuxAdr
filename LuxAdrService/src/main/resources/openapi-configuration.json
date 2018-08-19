@@ -1,6 +1,6 @@
 {
-    "scannerClass" : "io.swagger.v3.jaxrs2.integration.JaxrsApplicationScanner",
-    "prettyPrint" : true,
+    "scannerClass": "io.swagger.v3.jaxrs2.integration.JaxrsApplicationScanner",
+    "prettyPrint": true,
     "openAPI": {
         "info": {
             "version": "1.0",
@@ -15,8 +15,17 @@
                 "url": "http://www.apache.org/licenses/LICENSE-2.0.html"
             }
         },
-        "servers" : [
-            {"name": "Default", "url": "/LuxAdrService"}
+        "servers": [
+            {
+                "name": "Default", 
+                "url": "/{appPath}",
+                "variables": {
+                    "appPath": {
+                        "default": "LuxAdrService",
+                        "description": "Deployment path of the LuxAdrService. Beware of version numbers"
+                    }
+                }
+            }
         ]
     }
 }

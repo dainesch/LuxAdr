@@ -81,9 +81,9 @@ public class ConfigResource {
 
         Date never = new Date(0);
 
-        AppProcess build = procHand.getLastProcess(ProcessingStep.BUILDING);
-        AppProcess geo = procHand.getLastProcess(ProcessingStep.GEODATA);
-        AppProcess ind = procHand.getLastProcess(ProcessingStep.INDEXLUCENE);
+        AppProcess build = procHand.getLastCompletedProcess(ProcessingStep.BUILDING);
+        AppProcess geo = procHand.getLastCompletedProcess(ProcessingStep.GEODATA);
+        AppProcess ind = procHand.getLastCompletedProcess(ProcessingStep.INDEXLUCENE);
 
         Date dBuild = build == null ? never : build.getEnd();
         Date dGeo = geo == null ? never : geo.getEnd();

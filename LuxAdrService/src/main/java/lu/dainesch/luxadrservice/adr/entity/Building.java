@@ -13,6 +13,7 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.Index;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
@@ -25,7 +26,9 @@ import lu.dainesch.luxadrdto.entity.BuildingDTO;
 import lu.dainesch.luxadrservice.base.ImportedEntity;
 
 @Entity
-@Table(name = "BUILDING")
+@Table(name = "BUILDING", indexes = {
+    @Index(name = "IDX_BUILDING_NUM", columnList = "NUMBER")
+})
 @Cacheable
 @NamedQueries({
     @NamedQuery(name = "building.invalidate", query = "UPDATE Building SET active = false, until = :proc where current != :proc")

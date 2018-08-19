@@ -4,10 +4,15 @@ var CONF = {
     ADMIN_ACCESS_KEY: {key: "ADMIN_ACCESS_KEY"}
 };
 var MODES = {
+    HOME: {title: "Welcome to LuxAdr", key: "home"},
     FIRST: {title: "First time setup", key: "first"},
     DEMO: {title: "Public API demo", key: "demo"},
     SETTINGS: {title: "Settings", key: "sett"}
 };
+var DEFAULT_URL = "http://localhost:8080/LuxAdrService";
+var DEFAULT_KEY = "ufnDMuLS7dOO51JlAtuSoszHxl0Wico4sPqR96FiNdf3reLClQNp6QFhIVPbS6Vi";
+
+
 
 
 Vue.use(VueMaterial.default);
@@ -18,39 +23,25 @@ Vue.component('log-entry', {
     computed: {
         time: function () {
 
-            var d = new Date(this.item.created);
+            var d = new Date(this.item.created.replace('[UTC]', ''));
             return d.getHours() + ":" +
                     (d.getMinutes() < 10 ? "0" : "") + d.getMinutes() + ":" +
                     (d.getSeconds() < 10 ? "0" : "") + d.getSeconds() + "." +
                     d.getMilliseconds();
         }
     },
-    template: '<div class="logrow"><div class="logstep">{{ time }}</div><div class="logstep">{{ item.step }}</div>&nbsp;&gt;&nbsp;{{ item.log }}</div>'
+    template: '<div class="logrow"><div class="logstep">{{ time }}</div><div class="logstep centerText">{{ item.step }}</div>&nbsp;&gt;&nbsp;{{ item.log }}</div>'
 });
-
-Vue.component('conf-entry', {
-    data: function () {
-        return {
-            count: 0
-        };
-    },
-    props: ['item'],
-    computed: {
-    },
-    template: '<md-field><label>Type here!</label><md-input v-model="type"></md-input><span class="md-helper-text">Helper text</span></md-field>'
-});
-
-
 
 
 
 new Vue({
     el: '#app',
     data: {
-        title: MODES.FIRST.title,
-        mode: MODES.FIRST.key,
-        url: "http://localhost:8080/LuxAdrService",
-        key: "ufnDMuLS7dOO51JlAtuSoszHxl0Wico4sPqR96FiNdf3reLClQNp6QFhIVPbS6Vi",
+        title: MODES.HOME.title,
+        mode: MODES.HOME.key,
+        url: DEFAULT_URL,
+        key: DEFAULT_KEY,
         secured: false,
         connected: false,
         progressMode: "determinate",
@@ -60,6 +51,7 @@ new Vue({
         working: false,
         config: [],
         steps: {zero: false, first: false, second: false, third: false, fourth: false},
+        settSaved: false,
         //
         corrId: 0,
         searchResults: [],
@@ -67,6 +59,17 @@ new Vue({
         searchDetails: ""
     },
     created: function () {
+        // url
+
+        if (typeof (localStorage) !== "undefined" && localStorage.getItem('url') !== null) {
+            this.url = localStorage.getItem('url');
+            this.key = localStorage.getItem('key');
+        } else {
+            this.url = location.protocol + '//' + location.hostname + (location.port ? ':' + location.port : '') + '/LuxAdrService';
+        }
+
+
+        // timers
         setInterval(this.refreshLog, 10000);
         this.refreshLog();
         setInterval(this.refreshStatus, 10000);
@@ -77,14 +80,23 @@ new Vue({
             this.title = p.title;
             this.mode = p.key;
         },
+        toHome: function () {
+            this.page(MODES.HOME);
+            this.$refs.homeMenu.className = 'md-selected';
+            this.$refs.firstMenu.className = '';
+            this.$refs.demoMenu.className = '';
+            this.$refs.settMenu.className = '';
+        },
         toFirst: function () {
             this.page(MODES.FIRST);
+            this.$refs.homeMenu.className = '';
             this.$refs.firstMenu.className = 'md-selected';
             this.$refs.demoMenu.className = '';
             this.$refs.settMenu.className = '';
         },
         toDemo: function () {
             this.page(MODES.DEMO);
+            this.$refs.homeMenu.className = '';
             this.$refs.firstMenu.className = '';
             this.$refs.demoMenu.className = 'md-selected';
             this.$refs.settMenu.className = '';
@@ -92,6 +104,7 @@ new Vue({
         },
         toSett: function () {
             this.page(MODES.SETTINGS);
+            this.$refs.homeMenu.className = '';
             this.$refs.firstMenu.className = '';
             this.$refs.demoMenu.className = '';
             this.$refs.settMenu.className = 'md-selected';
@@ -100,6 +113,10 @@ new Vue({
             if (this.working) {
                 return;
             }
+            if (this.url.endsWith('/')) {
+                this.url = this.url.substring(0, this.url.length - 2);
+            }
+
             this.setWorking(true);
             var _this = this;
             fetch(_this.url + '/admin/api/action/ping', {
@@ -114,6 +131,10 @@ new Vue({
                     _this.setWorking(false);
                     _this.testConText = "Test successful";
                     _this.steps.zero = true;
+                    if (typeof (localStorage) !== "undefined") {
+                        localStorage.setItem('url', _this.url);
+                        localStorage.setItem('key', _this.key);
+                    }
                 } else {
                     _this.connected = false;
                     _this.setWorking(false);
@@ -228,6 +249,7 @@ new Vue({
             this.writeConfig();
         },
         writeConfig: function () {
+            this.settSaved = false;
             var _this = this;
             fetch(_this.url + '/admin/api/config/', {
                 method: 'POST',
@@ -239,10 +261,10 @@ new Vue({
                 body: JSON.stringify(_this.config)
             }).then(function (response) {
                 if (response.ok) {
-                    _this.setWorking(false);
-                } else {
-                    _this.setWorking(false);
+                    _this.settSaved = true;
                 }
+                _this.setWorking(false);
+
             }).catch(function (ex) {
                 _this.setWorking(false);
             });
@@ -289,7 +311,7 @@ new Vue({
         },
         getBuilding: function (id) {
             var _this = this;
-            fetch(_this.url + '/api/v1/building/'+id, {
+            fetch(_this.url + '/api/v1/building/' + id, {
                 headers: {
                     'AccessKey': _this.key
                 },
@@ -297,7 +319,7 @@ new Vue({
             }).then(function (response) {
                 return response.json();
             }).then(function (l) {
-                _this._data.searchDetails =  JSON.stringify(l, null, '\t');
+                _this._data.searchDetails = JSON.stringify(l, null, '\t');
             });
         }
     }
