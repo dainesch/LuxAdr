@@ -2,6 +2,7 @@ package lu.dainesch.luxadrservice.base;
 
 import java.io.Serializable;
 import java.util.Objects;
+import javax.json.bind.annotation.JsonbTransient;
 import javax.persistence.Cacheable;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -36,6 +37,7 @@ public class ConfigValue implements Serializable {
     @TableGenerator(name = "ConfigValue")
     @Column(name = "CFG_ID")
     @XmlTransient
+    @JsonbTransient
     private Long id;
 
     @Column(name = "CFG_KEY", nullable = false, unique = true)
@@ -78,34 +80,52 @@ public class ConfigValue implements Serializable {
         this.value = value;
     }
 
+    @JsonbTransient
     public void setInt(int v) {
         this.value = String.valueOf(v);
     }
 
+    @JsonbTransient
     public Integer getInt() {
         try {
             return Integer.parseInt(value);
         } catch (NumberFormatException ex) {
-            return Integer.parseInt(type.getDefaultValue());
+            // try default value
+            try {
+                return Integer.parseInt(type.getDefaultValue());
+            } catch (NumberFormatException e) {
+                // give up
+                return null;
+            }
         }
     }
 
+    @JsonbTransient
     public void setFloat(float v) {
         this.value = String.valueOf(v);
     }
 
+    @JsonbTransient
     public Float getFloat() {
         try {
             return Float.parseFloat(value);
         } catch (NumberFormatException ex) {
-            return Float.parseFloat(type.getDefaultValue());
+            // try default value
+            try {
+                return Float.parseFloat(type.getDefaultValue());
+            } catch (NumberFormatException e) {
+                // give up
+                return null;
+            }
         }
     }
 
+    @JsonbTransient
     public void setBoolean(boolean val) {
         this.value = Boolean.toString(val);
     }
 
+    @JsonbTransient
     public boolean getBoolean() {
         return Boolean.valueOf(value);
     }

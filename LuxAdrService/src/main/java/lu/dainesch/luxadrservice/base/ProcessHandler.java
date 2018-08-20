@@ -52,12 +52,7 @@ public class ProcessHandler {
     }
 
     public List<ProcessingLog> getLatestLog() {
-        AppProcess proc = getLatest();
-        if (proc == null) {
-            return Collections.EMPTY_LIST;
-        }
-        return em.createNamedQuery("processinglog.by.proc", ProcessingLog.class)
-                .setParameter("proc", proc)
+        return em.createNamedQuery("processinglog.latest", ProcessingLog.class)
                 .setMaxResults(10)
                 .getResultList();
     }

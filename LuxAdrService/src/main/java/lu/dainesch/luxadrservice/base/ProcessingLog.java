@@ -3,6 +3,8 @@ package lu.dainesch.luxadrservice.base;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.Objects;
+import javax.json.bind.annotation.JsonbDateFormat;
+import javax.json.bind.annotation.JsonbTransient;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -27,9 +29,8 @@ import javax.xml.bind.annotation.XmlTransient;
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.FIELD)
 @NamedQueries({
-    @NamedQuery(name = "processinglog.by.proc",
+    @NamedQuery(name = "processinglog.latest",
             query = "Select l from ProcessingLog l "
-            + "where l.process = :proc "
             + "order by l.created desc")
 })
 @Table(name = "PROCESS_LOG")
@@ -43,6 +44,7 @@ public class ProcessingLog implements Serializable {
 
     @Column(name = "CREATED", nullable = false)
     @Temporal(TemporalType.TIMESTAMP)
+    @JsonbDateFormat(JsonbDateFormat.TIME_IN_MILLIS)
     private Date created;
 
     @Column(name = "LOG")
@@ -54,6 +56,7 @@ public class ProcessingLog implements Serializable {
 
     @ManyToOne
     @XmlTransient
+    @JsonbTransient
     @JoinColumn(name = "PROC_ID", nullable = false)
     private AppProcess process;
 

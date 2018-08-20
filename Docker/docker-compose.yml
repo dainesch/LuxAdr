@@ -1,0 +1,30 @@
+version: "2"
+
+services:
+
+  db:
+    image: postgres
+    restart: unless-stopped
+    container_name: luxadr-db
+    environment:
+      - POSTGRES_USER=glassfish
+      - POSTGRES_PASSWORD=glassfish
+    volumes:
+      - ./data/db:/var/lib/postgresql/data
+      - /etc/localtime:/etc/localtime:ro
+
+  luxadr:
+    build: .
+    depends_on:
+      - db
+    container_name: luxadr-server
+    restart: unless-stopped
+    volumes:
+#      - ./data/lucene:/tmp/lucene
+      - /etc/localtime:/etc/localtime:ro
+    ports:
+      - "58080:8080"
+#      - "54848:4848"
+    environment:
+      - POSTBOOT_COMMANDS=/opt/payara5/asadmin.txt
+

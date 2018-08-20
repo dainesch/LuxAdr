@@ -11,8 +11,6 @@ import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import lu.dainesch.luxadrservice.adr.BatchImportService;
-import lu.dainesch.luxadrservice.adr.handler.BuildingHandler;
-import lu.dainesch.luxadrservice.adr.handler.CoordinatesHandler;
 import lu.dainesch.luxadrservice.base.ImportException;
 import lu.dainesch.luxadrservice.base.ProcessHandler;
 import lu.dainesch.luxadrservice.base.ProcessingStep;
@@ -22,8 +20,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 @Path("action")
-@Consumes(MediaType.APPLICATION_JSON)
-@Produces(MediaType.APPLICATION_JSON)
+@Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
+@Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
 public class ActionsResource {
 
     private static final Logger LOG = LoggerFactory.getLogger(ActionsResource.class);

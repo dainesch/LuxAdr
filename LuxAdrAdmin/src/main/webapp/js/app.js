@@ -23,7 +23,7 @@ Vue.component('log-entry', {
     computed: {
         time: function () {
 
-            var d = new Date(this.item.created.replace('[UTC]', ''));
+            var d = new Date(parseInt(this.item.created));
             return d.getHours() + ":" +
                     (d.getMinutes() < 10 ? "0" : "") + d.getMinutes() + ":" +
                     (d.getSeconds() < 10 ? "0" : "") + d.getSeconds() + "." +
@@ -228,7 +228,7 @@ new Vue({
                 return response.json();
             }).then(function (l) {
                 _this._data.config = l;
-                _this._data.secured = _this.getConfigObject(CONF.ADMIN_ACCESS_CHECK).value;
+                _this._data.secured = _this.getConfigObject(CONF.ADMIN_ACCESS_CHECK).value === 'true';
             });
         },
         getConfigObject: function (key) {
@@ -244,7 +244,7 @@ new Vue({
             if (this.config.length === 0) {
                 return;
             }
-            this.getConfigObject(CONF.ADMIN_ACCESS_CHECK).value = this.secured === 'on' ? 'true' : 'false';
+            this.getConfigObject(CONF.ADMIN_ACCESS_CHECK).value = this.secured ? 'true' : 'false';
             this.getConfigObject(CONF.ADMIN_ACCESS_KEY).value = this.key;
             this.writeConfig();
         },

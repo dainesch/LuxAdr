@@ -22,8 +22,8 @@ import lu.dainesch.luxadrservice.base.ProcessingStep;
 import lu.dainesch.luxadrservice.search.LuceneSingleton;
 
 @Path("config")
-@Consumes(MediaType.APPLICATION_JSON)
-@Produces(MediaType.APPLICATION_JSON)
+@Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
+@Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
 public class ConfigResource {
 
     @Inject
