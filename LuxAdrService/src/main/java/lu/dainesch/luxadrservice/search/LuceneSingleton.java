@@ -21,6 +21,7 @@ import lu.dainesch.luxadrservice.base.ConfigHandler;
 import lu.dainesch.luxadrservice.base.ConfigType;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.fr.FrenchAnalyzer;
+import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.LatLonPoint;
 import org.apache.lucene.index.DirectoryReader;
@@ -43,6 +44,7 @@ import org.slf4j.LoggerFactory;
 public class LuceneSingleton {
 
     private static final Logger LOG = LoggerFactory.getLogger(LuceneSingleton.class);
+    private static final float MIN_SCORE = 5;
 
     @Inject
     private ConfigHandler confHand;
@@ -76,7 +78,7 @@ public class LuceneSingleton {
 
         try {
             directory = FSDirectory.open(path);
-            analyzer = new FrenchAnalyzer();
+            analyzer = new StandardAnalyzer();
 
         } catch (IOException ex) {
             LOG.error("Error initializing lucence", ex);
@@ -152,6 +154,9 @@ public class LuceneSingleton {
             ScoreDoc[] hits = results.scoreDocs;
 
             for (ScoreDoc sd : hits) {
+                if (sd.score < MIN_SCORE) {
+                    break;
+                }
                 Document doc = searcher.doc(sd.doc);
                 AdrSearchEntry res = new AdrSearchEntry(doc);
                 if (!ret.contains(res)) {

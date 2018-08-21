@@ -27,7 +27,7 @@ import org.apache.lucene.search.TermQuery;
 public class AdrSearchEntry implements Serializable {
 
     public static final String POS = "pos";
-    
+
     private static final SearchType TYPE = SearchType.ADDRESS;
     private static final String ID = "id";
     private static final String T = "type";
@@ -35,7 +35,6 @@ public class AdrSearchEntry implements Serializable {
     private static final String PC = "postalCode";
     private static final String NUM = "number";
     private static final String ALL = "all";
-    
 
     private final Long id;
     private final String address;
@@ -116,7 +115,7 @@ public class AdrSearchEntry implements Serializable {
 
         return b.build();
     }
-    
+
     Term getTerm() {
         return new Term("id", String.valueOf(id));
     }
