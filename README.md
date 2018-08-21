@@ -12,3 +12,14 @@
 Several search features are included and designed to be used, among others, from web pages. 
 You will also have the possibility to search via location data. Additionally once imported, data will never be deleted, 
 only deactivated, so if you make a reference to an id it will be always be available for later use. 
+
+![Admin setup screen](./Docs/AdminSetup-thumb.png?raw=true) ![Admin demo](./Docs/AdminDemo-thumb.png?raw=true) ![OpenAPI doc](./Docs/OpenAPIDoc-thumb.png?raw=true)
+
+[Admin setup screen](./Docs/AdminSetup.png?raw=true) 
+
+[Admin demo](./Docs/AdminDemo.png?raw=true) 
+
+[OpenAPI doc](./Docs/OpenAPIDoc.png?raw=true)
+
+
+
