@@ -1,0 +1,721 @@
+{
+	"info": {
+		"_postman_id": "1c8b9d3c-c837-2a61-fa56-9465db9b27bc",
+		"name": "LuxAdr",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Adr search (lucene)",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json; charset=utf-8"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"corrId\": 12,\n\t\"maxResults\": 20,\n\t\"value\": \"404\"\n}"
+				},
+				"url": {
+					"raw": "{{url}}/LuxAdrService/api/v1/search",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"LuxAdrService",
+						"api",
+						"v1",
+						"search"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Postcode by id",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {},
+				"url": {
+					"raw": "{{url}}/LuxAdrService/api/v1/postcode/1",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"LuxAdrService",
+						"api",
+						"v1",
+						"postcode",
+						"1"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Postcode by id - streets",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {},
+				"url": {
+					"raw": "{{url}}/LuxAdrService/api/v1/postcode/1000/streets",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"LuxAdrService",
+						"api",
+						"v1",
+						"postcode",
+						"1000",
+						"streets"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Postcode by code ",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {},
+				"url": {
+					"raw": "{{url}}/LuxAdrService/api/v1/postcode/code/4048",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"LuxAdrService",
+						"api",
+						"v1",
+						"postcode",
+						"code",
+						"4048"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Postcode by code - streets",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {},
+				"url": {
+					"raw": "{{url}}/LuxAdrService/api/v1/postcode/code/4048/streets",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"LuxAdrService",
+						"api",
+						"v1",
+						"postcode",
+						"code",
+						"4048",
+						"streets"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Postcode search",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"corrId\": 12,\n\t\"maxResults\": 20,\n\t\"value\": \"404\"\n}"
+				},
+				"url": {
+					"raw": "{{url}}/LuxAdrService/api/v1/postcode/search",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"LuxAdrService",
+						"api",
+						"v1",
+						"postcode",
+						"search"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Locality by id",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {},
+				"url": {
+					"raw": "{{url}}/LuxAdrService/api/v1/locality/1",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"LuxAdrService",
+						"api",
+						"v1",
+						"locality",
+						"1"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Locality by id - streets",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {},
+				"url": {
+					"raw": "{{url}}/LuxAdrService/api/v1/locality/1/streets",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"LuxAdrService",
+						"api",
+						"v1",
+						"locality",
+						"1",
+						"streets"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Locality by id - postcodes",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {},
+				"url": {
+					"raw": "{{url}}/LuxAdrService/api/v1/locality/10/postcodes",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"LuxAdrService",
+						"api",
+						"v1",
+						"locality",
+						"10",
+						"postcodes"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Locality search",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json; charset=utf-8"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"corrId\": 12,\n\t\"maxResults\": 20,\n\t\"beginning\":false,\n\t\"value\": \"é\"\n}"
+				},
+				"url": {
+					"raw": "{{url}}/LuxAdrService/api/v1/locality/search",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"LuxAdrService",
+						"api",
+						"v1",
+						"locality",
+						"search"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Street by id",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {},
+				"url": {
+					"raw": "{{url}}/LuxAdrService/api/v1/street/1",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"LuxAdrService",
+						"api",
+						"v1",
+						"street",
+						"1"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Street by id - postcodes",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {},
+				"url": {
+					"raw": "{{url}}/LuxAdrService/api/v1/street/1/postcodes",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"LuxAdrService",
+						"api",
+						"v1",
+						"street",
+						"1",
+						"postcodes"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Street by id - numbers",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {},
+				"url": {
+					"raw": "{{url}}/LuxAdrService/api/v1/street/10/numbers",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"LuxAdrService",
+						"api",
+						"v1",
+						"street",
+						"10",
+						"numbers"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Street search",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json; charset=utf-8"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"corrId\": 12,\n\t\"maxResults\": 20,\n\t\"beginning\":false,\n\t\"value\": \"luxem\"\n}"
+				},
+				"url": {
+					"raw": "{{url}}/LuxAdrService/api/v1/street/search",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"LuxAdrService",
+						"api",
+						"v1",
+						"street",
+						"search"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Building by id",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {},
+				"url": {
+					"raw": "{{url}}/LuxAdrService/api/v1/building/100",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"LuxAdrService",
+						"api",
+						"v1",
+						"building",
+						"100"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Number by id",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {},
+				"url": {
+					"raw": "{{url}}/LuxAdrService/api/v1/number/888",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"LuxAdrService",
+						"api",
+						"v1",
+						"number",
+						"888"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Geo nearest building",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json; charset=utf-8"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"latitude\":  49.496484, \n\t\"longitude\":  5.981526,\n\t\"distance\": 0.1,\n\t\"lucene\" : false\n}\n\n"
+				},
+				"url": {
+					"raw": "{{url}}/LuxAdrService/api/v1/geo/building",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"LuxAdrService",
+						"api",
+						"v1",
+						"geo",
+						"building"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Geo building in distance",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json; charset=utf-8"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"latitude\":  49.524849, \n\t\"longitude\":  6.010656,\n\t\"distance\": 0.5,\n\t\"lucene\": true\n}\n"
+				},
+				"url": {
+					"raw": "{{url}}/LuxAdrService/api/v1/geo/building/all",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"LuxAdrService",
+						"api",
+						"v1",
+						"geo",
+						"building",
+						"all"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Admin status",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json; charset=utf-8"
+					},
+					{
+						"key": "AccessKey",
+						"value": "ufnDMuLS7dOO51JlAtuSoszHxl0Wico4sPqR96FiNdf3reLClQNp6QFhIVPbS6Vi"
+					}
+				],
+				"body": {},
+				"url": {
+					"raw": "{{url}}/LuxAdrService/admin/api/config/status",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"LuxAdrService",
+						"admin",
+						"api",
+						"config",
+						"status"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Admin log",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json; charset=utf-8"
+					},
+					{
+						"key": "AccessKey",
+						"value": "ufnDMuLS7dOO51JlAtuSoszHxl0Wico4sPqR96FiNdf3reLClQNp6QFhIVPbS6Vi"
+					}
+				],
+				"body": {},
+				"url": {
+					"raw": "{{url}}/LuxAdrService/admin/api/log",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"LuxAdrService",
+						"admin",
+						"api",
+						"log"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Admin config",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json; charset=utf-8"
+					},
+					{
+						"key": "AccessKey",
+						"value": "ufnDMuLS7dOO51JlAtuSoszHxl0Wico4sPqR96FiNdf3reLClQNp6QFhIVPbS6Vi"
+					}
+				],
+				"body": {},
+				"url": {
+					"raw": "{{url}}/LuxAdrService/admin/api/config",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"LuxAdrService",
+						"admin",
+						"api",
+						"config"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Admin config save",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json; charset=utf-8"
+					},
+					{
+						"key": "AccessKey",
+						"value": "ufnDMuLS7dOO51JlAtuSoszHxl0Wico4sPqR96FiNdf3reLClQNp6QFhIVPbS6Vi"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "[\n    {\n        \"type\": \"ADMIN_ACCESS_CHECK\",\n        \"value\": \"true\"\n    },\n    {\n        \"type\": \"ADMIN_ACCESS_KEY\",\n        \"value\": \"ufnDMuLS7dOO51JlAtuSoszHxl0Wico4sPqR96FiNdf3reLClQNp6QFhIVPbS6Vi\"\n    },\n    {\n        \"type\": \"BATCH_SIZE\",\n        \"value\": \"1000\"\n    },\n    {\n        \"type\": \"CORS_ORIGIN\",\n        \"value\": \"*\"\n    },\n    {\n        \"type\": \"MAX_DIST_KM\",\n        \"value\": \"0.2\"\n    },\n    {\n        \"type\": \"MAX_SEARCH_RES\",\n        \"value\": \"20\"\n    }\n]"
+				},
+				"url": {
+					"raw": "{{url}}/LuxAdrService/admin/api/config",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"LuxAdrService",
+						"admin",
+						"api",
+						"config"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Admin action - create search index",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json; charset=utf-8"
+					},
+					{
+						"key": "AccessKey",
+						"value": "ufnDMuLS7dOO51JlAtuSoszHxl0Wico4sPqR96FiNdf3reLClQNp6QFhIVPbS6Vi"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{url}}/LuxAdrService/admin/api/action/index",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"LuxAdrService",
+						"admin",
+						"api",
+						"action",
+						"index"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Admin action - wipe search index",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json; charset=utf-8"
+					},
+					{
+						"key": "AccessKey",
+						"value": "ufnDMuLS7dOO51JlAtuSoszHxl0Wico4sPqR96FiNdf3reLClQNp6QFhIVPbS6Vi"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{url}}/LuxAdrService/admin/api/action/wipeIndex",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"LuxAdrService",
+						"admin",
+						"api",
+						"action",
+						"wipeIndex"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Admin action - Import adr data",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json; charset=utf-8"
+					},
+					{
+						"key": "AccessKey",
+						"value": "ufnDMuLS7dOO51JlAtuSoszHxl0Wico4sPqR96FiNdf3reLClQNp6QFhIVPbS6Vi"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{url}}/LuxAdrService/admin/api/action/importAddr",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"LuxAdrService",
+						"admin",
+						"api",
+						"action",
+						"importAddr"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Admin action - Import geo adr data",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json; charset=utf-8"
+					},
+					{
+						"key": "AccessKey",
+						"value": "ufnDMuLS7dOO51JlAtuSoszHxl0Wico4sPqR96FiNdf3reLClQNp6QFhIVPbS6Vi"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{url}}/LuxAdrService/admin/api/action/importGeo",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"LuxAdrService",
+						"admin",
+						"api",
+						"action",
+						"importGeo"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
